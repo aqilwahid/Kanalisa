@@ -4,6 +4,8 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(3000),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   YOUTUBE_API_KEY: z.string().min(1).default('test-key'),
+  GOOGLE_CLIENT_ID: z.string().min(1).default('test-google-client-id'),
+  GOOGLE_CLIENT_SECRET: z.string().min(1).default('test-google-client-secret'),
   JWT_SECRET: z.string().min(32).default('test-secret-key-min-32-chars-long'),
   JWT_EXPIRES_IN: z.string().default('7d'),
   REDIS_URL: z.string().url().default('redis://localhost:6379'),

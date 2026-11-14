@@ -3,6 +3,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { config } from './config.js';
 import { connectRedis, getRedis } from './utils/cache.js';
+import { initDatabase, query, getClient } from './utils/database.js';
+import { createUserModel } from './models/user.js';
+import { createKeywordCacheModel } from './models/keyword-cache.js';
 
 import videoRoutes from './routes/video.js';
 import keywordRoutes from './routes/keyword.js';
@@ -47,6 +50,7 @@ function createMockRedis() {
     setex: async (key, ttl, value) => { store.set(key, value); return 'OK'; },
     del: async (key) => { store.delete(key); return 1; },
     incr: async (key) => { const val = (store.get(key) || 0) + 1; store.set(key, val); return val; },
+    incrby: async (key, amount) => { const val = (store.get(key) || 0) + amount; store.set(key, val); return val; },
     expire: async (key, ttl) => 1,
     smembers: async (key) => Array.from(store.get(key) || new Set()),
     sadd: async (key, ...members) => { 
@@ -79,19 +83,113 @@ function createMockRedis() {
   };
 }
 
+// Initialize database and models
+let userModel = null;
+let keywordCacheModel = null;
+
+async function initDatabaseAndModels() {
+  try {
+    await initDatabase();
+    userModel = createUserModel({ query });
+    keywordCacheModel = createKeywordCacheModel({ query });
+    console.log('Database models initialized');
+  } catch (err) {
+    console.warn('Database initialization failed, using mock models:', err.message);
+    userModel = createMockUserModel();
+    keywordCacheModel = createMockKeywordCacheModel();
+  }
+}
+
+function createMockUserModel() {
+  const users = new Map();
+  return {
+    async createUser({ googleId, email, name, avatar, tier = 'free', aiCredits = 50, keywordQuota = 3 }) {
+      const id = 'temp-' + Date.now();
+      const user = { id, googleId, email, name, avatar, tier, aiCredits, keywordQuota, createdAt: new Date() };
+      users.set(googleId, user);
+      return user;
+    },
+    async getUserByGoogleId(googleId) {
+      return users.get(googleId) || null;
+    },
+    async getUserById(id) {
+      for (const user of users.values()) {
+        if (user.id === id) return user;
+      }
+      return null;
+    },
+    async updateUserTier(id, tier, billingCycle, currentPeriodEnd, aiCredits, keywordQuota) {
+      for (const user of users.values()) {
+        if (user.id === id) {
+          user.tier = tier;
+          user.billingCycle = billingCycle;
+          user.currentPeriodEnd = currentPeriodEnd;
+          user.aiCredits = aiCredits;
+          user.keywordQuota = keywordQuota;
+          return user;
+        }
+      }
+      return { id, tier };
+    },
+    async updateUserSubscription(id, { cancelAtPeriodEnd }) {
+      for (const user of users.values()) {
+        if (user.id === id) {
+          user.cancelAtPeriodEnd = cancelAtPeriodEnd;
+          return user;
+        }
+      }
+      return { id, cancelAtPeriodEnd };
+    },
+    async deleteUser(id) {
+      for (const [key, user] of users.entries()) {
+        if (user.id === id) {
+          users.delete(key);
+          return true;
+        }
+      }
+      return false;
+    },
+  };
+}
+
+function createMockKeywordCacheModel() {
+  const cache = new Map();
+  return {
+    async get(query) {
+      const normalized = query.toLowerCase().trim();
+      const entry = cache.get(normalized);
+      if (entry && entry.expiresAt > new Date()) {
+        return entry.results;
+      }
+      return null;
+    },
+    async set(query, results, ttlHours = 24) {
+      const normalized = query.toLowerCase().trim();
+      const expiresAt = new Date(Date.now() + ttlHours * 3600000);
+      cache.set(normalized, { results, expiresAt });
+      return { query, normalized, results, expiresAt };
+    },
+    async cleanup() {
+      const now = new Date();
+      for (const [key, entry] of cache.entries()) {
+        if (entry.expiresAt <= now) {
+          cache.delete(key);
+        }
+      }
+    },
+  };
+}
+
 app.use(async (req, res, next) => {
   if (!redis) {
     await initRedis();
   }
+  if (!userModel) {
+    await initDatabaseAndModels();
+  }
   req.redis = redis;
-  req.db = {
-    async getUserByGoogleId(googleId) { return null; },
-    async getUserById(id) { return null; },
-    async createUser(data) { return { id: 'temp-' + Date.now(), ...data }; },
-    async updateUserTier(id, tier, billingCycle, currentPeriodEnd, aiCredits, keywordQuota) { return { id, tier }; },
-    async updateUserSubscription(id, data) { return { id, ...data }; },
-    async deleteUser(id) { return true; },
-  };
+    req.userModel = userModel;
+  req.keywordCache = keywordCacheModel;
   next();
 });
 

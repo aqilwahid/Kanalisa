@@ -1,56 +1,26 @@
 import express from 'express';
-import { getVideoStats, getChannelStats, getVideosBatch, getChannelsBatch } from '../services/youtube-mock.js';
+import { getVideoDetails, getChannelDetails, getVideos, getChannels, normalizeVideo, normalizeChannel } from '../services/youtube.js';
 import { calculateKanalisaScore, calculateOutlierRatio, estimateEarningsRupiah } from '../services/scoring.js';
 import { optionalAuthMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
-
-function normalizeVideoMock(video) {
-  return {
-    id: video.id,
-    title: video.title,
-    description: video.description,
-    publishedAt: video.publishedAt,
-    channelId: video.channelId,
-    channelTitle: video.channelTitle,
-    tags: video.tags || [],
-    thumbnails: video.thumbnails,
-    duration: video.duration,
-    viewCount: video.viewCount,
-    likeCount: video.likeCount,
-    commentCount: video.commentCount,
-  };
-}
-
-function normalizeChannelMock(channel) {
-  return {
-    id: channel.id,
-    title: channel.title,
-    description: channel.description,
-    publishedAt: channel.publishedAt,
-    thumbnails: channel.thumbnails,
-    subscriberCount: channel.subscriberCount,
-    videoCount: channel.videoCount,
-    viewCount: channel.viewCount,
-  };
-}
 
 router.get('/:id', optionalAuthMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const { includeScore = 'true', includeChannel = 'true', includeEarnings = 'false' } = req.query;
     
-    const video = await getVideoStats(id);
+    const video = await getVideoDetails(id);
     if (!video) {
       return res.status(404).json({ error: 'Video not found' });
     }
     
-    const normalized = normalizeVideoMock(video);
+    const normalized = normalizeVideo(video);
     
     let channelData = null;
     if (includeChannel === 'true') {
-      const channel = await getChannelStats(normalized.channelId);
-      channelData = channel ? normalizeChannelMock(channel) : null;
+      const channel = await getChannelDetails(normalized.channelId);
+      channelData = channel ? normalizeChannel(channel) : null;
     }
     
     let scoreData = null;
@@ -97,8 +67,8 @@ router.post('/batch', optionalAuthMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Maximum 50 videos per request' });
     }
     
-    const videos = await getVideosBatch(ids);
-    const normalized = videos.map(normalizeVideoMock).filter(Boolean);
+    const videos = await getVideos(ids);
+    const normalized = videos.map(normalizeVideo).filter(Boolean);
     
     res.json({ videos: normalized });
   } catch (err) {
@@ -111,12 +81,12 @@ router.get('/channel/:channelId', optionalAuthMiddleware, async (req, res) => {
   try {
     const { channelId } = req.params;
     
-    const channel = await getChannelStats(channelId);
+    const channel = await getChannelDetails(channelId);
     if (!channel) {
       return res.status(404).json({ error: 'Channel not found' });
     }
     
-    const normalizedChannel = normalizeChannelMock(channel);
+    const normalizedChannel = normalizeChannel(channel);
     
     res.json({ channel: normalizedChannel });
   } catch (err) {

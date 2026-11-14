@@ -30,11 +30,18 @@ export function calculateCosineSimilarity(tokensA, tokensB) {
 }
 
 export async function searchKeyword(query, options = {}) {
-  const { limit = 20, useCache = true } = options;
+  const { limit = 20, useCache = true, keywordCache } = options;
   
-  const cacheKey = `keyword:search:${query.toLowerCase()}`;
+  // Try cache first
+  if (useCache && keywordCache) {
+    const cached = await keywordCache.get(query);
+    if (cached) {
+      console.log(`[CACHE HIT] Keyword: ${query}`);
+      return cached;
+    }
+  }
   
-  return {
+  const result = {
     query,
     volumeRelative: calculateVolumeRelative(query),
     competition: await calculateCompetition(query, limit),
@@ -43,6 +50,15 @@ export async function searchKeyword(query, options = {}) {
     relatedKeywords: await getRelatedKeywords(query),
     searchedAt: new Date().toISOString(),
   };
+  
+  const enriched = enrichKeywordResult(result);
+  
+  // Cache the result
+  if (useCache && keywordCache) {
+    await keywordCache.set(query, enriched, 24);
+  }
+  
+  return enriched;
 }
 
 export function calculateVolumeRelative(query) {
@@ -158,8 +174,9 @@ export function enrichKeywordResult(result) {
   };
 }
 
-export async function getKeywordSuggestions(query) {
-  const baseResult = await searchKeyword(query);
+export async function getKeywordSuggestions(query, options = {}) {
+  const { keywordCache } = options;
+  const baseResult = await searchKeyword(query, { keywordCache });
   const enriched = enrichKeywordResult(baseResult);
   
   const relatedEnriched = await Promise.all(

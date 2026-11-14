@@ -3,22 +3,27 @@ import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
-const MOCK_USER = {
-  id: 'user1',
-  email: 'test@example.com',
-  name: 'Test User',
-  avatar: 'https://example.com/avatar.png',
-  tier: 'free',
-  aiCredits: 45,
-  keywordQuota: 3,
-  createdAt: new Date().toISOString(),
-};
-
 router.get('/me', authMiddleware, async (req, res) => {
   try {
-    console.log('[MOCK] GET /api/user/me called');
+    const userModel = req.userModel;
+    const user = await userModel.getUserById(req.user.id);
     
-    res.json({ user: MOCK_USER });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar,
+        tier: user.tier,
+        aiCredits: user.ai_credits,
+        keywordQuota: user.keyword_quota,
+        createdAt: user.created_at,
+      },
+    });
   } catch (err) {
     console.error('Get user me error:', err.message);
     res.status(500).json({ error: 'Failed to fetch user' });

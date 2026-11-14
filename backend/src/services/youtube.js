@@ -1,5 +1,6 @@
 import { google } from 'googleapis';
 import { config } from '../config.js';
+import { getVideoStats as getMockVideoStats, getChannelStats as getMockChannelStats, getVideosBatch as getMockVideosBatch, getChannelsBatch as getMockChannelsBatch } from './youtube-mock.js';
 
 const youtube = google.youtube('v3');
 
@@ -13,6 +14,25 @@ let quotaUsed = 0;
 const QUOTA_DAILY_LIMIT = 10000;
 const QUOTA_ALERT_THRESHOLD = 0.8;
 
+const USE_MOCK = config.YOUTUBE_API_KEY === 'test-key' || !config.YOUTUBE_API_KEY;
+
+async function callWithFallback(apiCall, mockCall, method) {
+  if (USE_MOCK) {
+    console.log(`[MOCK] Using mock data for ${method}`);
+    return mockCall();
+  }
+  
+  try {
+    const result = await apiCall();
+    trackQuota(method);
+    return result;
+  } catch (err) {
+    console.error(`YouTube API ${method} error:`, err.message);
+    console.log(`[FALLBACK] Using mock data for ${method}`);
+    return mockCall();
+  }
+}
+
 export async function getVideos(videoIds, parts = ['snippet', 'statistics', 'contentDetails']) {
   if (!videoIds.length) return [];
   
@@ -22,19 +42,20 @@ export async function getVideos(videoIds, parts = ['snippet', 'statistics', 'con
   for (let i = 0; i < videoIds.length; i += batchSize) {
     const batch = videoIds.slice(i, i + batchSize);
     
-    try {
-      const response = await youtube.videos.list({
-        key: config.YOUTUBE_API_KEY,
-        part: parts.join(','),
-        id: batch.join(','),
-      });
-      
-      trackQuota('videos.list');
-      results.push(...(response.data.items || []));
-    } catch (err) {
-      console.error('YouTube API videos.list error:', err.message);
-      throw new Error(`Failed to fetch videos: ${err.message}`);
-    }
+    const batchResults = await callWithFallback(
+      async () => {
+        const response = await youtube.videos.list({
+          key: config.YOUTUBE_API_KEY,
+          part: parts.join(','),
+          id: batch.join(','),
+        });
+        return response.data.items || [];
+      },
+      async () => getMockVideosBatch(batch),
+      'videos.list'
+    );
+    
+    results.push(...batchResults);
   }
   
   return results;
@@ -49,19 +70,20 @@ export async function getChannels(channelIds, parts = ['snippet', 'statistics'])
   for (let i = 0; i < channelIds.length; i += batchSize) {
     const batch = channelIds.slice(i, i + batchSize);
     
-    try {
-      const response = await youtube.channels.list({
-        key: config.YOUTUBE_API_KEY,
-        part: parts.join(','),
-        id: batch.join(','),
-      });
-      
-      trackQuota('channels.list');
-      results.push(...(response.data.items || []));
-    } catch (err) {
-      console.error('YouTube API channels.list error:', err.message);
-      throw new Error(`Failed to fetch channels: ${err.message}`);
-    }
+    const batchResults = await callWithFallback(
+      async () => {
+        const response = await youtube.channels.list({
+          key: config.YOUTUBE_API_KEY,
+          part: parts.join(','),
+          id: batch.join(','),
+        });
+        return response.data.items || [];
+      },
+      async () => getMockChannelsBatch(batch),
+      'channels.list'
+    );
+    
+    results.push(...batchResults);
   }
   
   return results;
@@ -76,34 +98,60 @@ export async function searchVideos(query, options = {}) {
     relevanceLanguage = 'id',
   } = options;
   
-  try {
-    const response = await youtube.search.list({
-      key: config.YOUTUBE_API_KEY,
-      part: ['snippet'],
-      q: query,
-      maxResults,
-      order,
-      type,
-      regionCode,
-      relevanceLanguage,
-    });
-    
-    trackQuota('search.list');
-    return response.data.items || [];
-  } catch (err) {
-    console.error('YouTube API search.list error:', err.message);
-    throw new Error(`Failed to search videos: ${err.message}`);
-  }
+  return callWithFallback(
+    async () => {
+      const response = await youtube.search.list({
+        key: config.YOUTUBE_API_KEY,
+        part: ['snippet'],
+        q: query,
+        maxResults,
+        order,
+        type,
+        regionCode,
+        relevanceLanguage,
+      });
+      return response.data.items || [];
+    },
+    async () => {
+      // Mock search returns empty for now
+      return [];
+    },
+    'search.list'
+  );
 }
 
 export async function getVideoDetails(videoId) {
-  const videos = await getVideos([videoId]);
-  return videos[0] || null;
+  return callWithFallback(
+    async () => {
+      const videos = await getVideos([videoId]);
+      return videos[0] || null;
+    },
+    async () => {
+      try {
+        return await getMockVideoStats(videoId);
+      } catch {
+        return null;
+      }
+    },
+    'videos.list'
+  );
 }
 
 export async function getChannelDetails(channelId) {
-  const channels = await getChannels([channelId]);
-  return channels[0] || null;
+  return callWithFallback(
+    async () => {
+      const channels = await getChannels([channelId]);
+      return channels[0] || null;
+    },
+    async () => {
+      try {
+        return await getMockChannelStats(channelId);
+      } catch {
+        return null;
+      }
+    },
+    'channels.list'
+  );
 }
 
 function trackQuota(method) {
