@@ -37,6 +37,7 @@ async function apiRequest(path, { method = 'GET', body, auth = true, retry = tru
       return apiRequest(path, { method, body, auth, retry: false });
     }
     await chrome.storage.local.remove(TOKEN_KEY);
+    chrome.runtime.openOptionsPage();
   }
   if (!response.ok) {
     const detail = await response.json().catch(() => ({}));

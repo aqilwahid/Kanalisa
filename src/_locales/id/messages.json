@@ -211,18 +211,18 @@
   "hoursUnit": {
     "placeholders": {
       "1": {
-        "content": "`$1"
+        "content": "$1"
       }
     },
-    "message": "`$1 jam"
+    "message": "$1 jam"
   },
   "daysUnit": {
     "placeholders": {
       "1": {
-        "content": "`$1"
+        "content": "$1"
       }
     },
-    "message": "`$1 hari"
+    "message": "$1 hari"
   },
   "lessThanOneHour": {
     "message": "< 1 jam"
@@ -278,5 +278,140 @@
   },
   "signOutDummy": {
     "message": "Keluar"
+  },
+  "tabOnboarding": {
+    "message": "Onboarding"
+  },
+  "tabSettings": {
+    "message": "Pengaturan"
+  },
+  "step1Title": {
+    "message": "Langkah 1: Pilih niche kanal"
+  },
+  "step2Title": {
+    "message": "Langkah 2: Preferensi waktu dan AI"
+  },
+  "step3Title": {
+    "message": "Langkah 3: Tinjauan dan selesai"
+  },
+  "nextStep": {
+    "message": "Lanjut"
+  },
+  "prevStep": {
+    "message": "Kembali"
+  },
+  "finishOnboarding": {
+    "message": "Selesai"
+  },
+  "onboardingCompleted": {
+    "message": "Onboarding selesai! Pengaturan telah disimpan."
+  },
+  "nicheGaming": {
+    "message": "Gaming"
+  },
+  "nicheBeauty": {
+    "message": "Kecantikan"
+  },
+  "nicheEducation": {
+    "message": "Edukasi"
+  },
+  "nicheTech": {
+    "message": "Teknologi"
+  },
+  "nicheCulinary": {
+    "message": "Kuliner"
+  },
+  "nicheFinance": {
+    "message": "Keuangan"
+  },
+  "nicheOther": {
+    "message": "Lainnya"
+  },
+  "reviewHeading": {
+    "message": "Ringkasan pilihan Anda"
+  },
+  "reviewNiche": {
+    "message": "Niche terpilih: $1",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "reviewTimezone": {
+    "message": "Zona waktu: $1",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "reviewStyle": {
+    "message": "Gaya bahasa AI: $1",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "panelSettingsHeading": {
+    "message": "Tampilan dan perilaku"
+  },
+  "featureVideoPanel": {
+    "message": "Panel analitik di halaman video"
+  },
+  "featureSearchCard": {
+    "message": "Kartu riset di halaman pencarian"
+  },
+  "themeHeading": {
+    "message": "Tema tampilan"
+  },
+  "themeSystem": {
+    "message": "Ikuti sistem"
+  },
+  "themeLight": {
+    "message": "Terang"
+  },
+  "themeDark": {
+    "message": "Gelap"
+  },
+  "accountHeading": {
+    "message": "Kelola akun"
+  },
+  "deleteAccount": {
+    "message": "Hapus akun"
+  },
+  "deleteAccountConfirm": {
+    "message": "Yakin ingin menghapus akun? Semua data dan token akan dihapus permanen."
+  },
+  "deleteAccountSuccess": {
+    "message": "Akun berhasil dihapus."
+  },
+  "deleteAccountError": {
+    "message": "Gagal menghapus akun. Coba beberapa saat lagi."
+  },
+  "googleSignIn": {
+    "message": "Login dengan Google"
+  },
+  "authenticating": {
+    "message": "Menghubungkan ke Google..."
+  },
+  "authFailed": {
+    "message": "Gagal masuk dengan Google. Coba lagi."
+  },
+  "authRequiredNotice": {
+    "message": "Silakan masuk melalui popup untuk melihat analitik lengkap."
+  },
+  "videoNotFound": {
+    "message": "Data video tidak ditemukan di YouTube."
+  },
+  "fetchVideoError": {
+    "message": "Gagal memuat data analitik video."
+  },
+  "retry": {
+    "message": "Coba lagi"
+  },
+  "loginSuccess": {
+    "message": "Berhasil masuk."
   }
 }

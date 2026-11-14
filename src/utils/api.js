@@ -45,5 +45,14 @@
     return response.json();
   }
 
-  return { ApiError, getToken, setToken, apiRequest: request };
+  async function callAPI(path, options = {}) {
+    try {
+      return await request(path, options);
+    } catch (error) {
+      if (error.status === 401 && chrome.runtime.openOptionsPage) chrome.runtime.openOptionsPage();
+      throw error;
+    }
+  }
+
+  return { ApiError, getToken, setToken, apiRequest: request, callAPI };
 });

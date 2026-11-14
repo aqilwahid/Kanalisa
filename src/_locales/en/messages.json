@@ -211,18 +211,18 @@
   "hoursUnit": {
     "placeholders": {
       "1": {
-        "content": "`$1"
+        "content": "$1"
       }
     },
-    "message": "`$1 hours"
+    "message": "$1 hours"
   },
   "daysUnit": {
     "placeholders": {
       "1": {
-        "content": "`$1"
+        "content": "$1"
       }
     },
-    "message": "`$1 days"
+    "message": "$1 days"
   },
   "lessThanOneHour": {
     "message": "< 1 hour"
@@ -278,5 +278,140 @@
   },
   "signOutDummy": {
     "message": "Sign out"
+  },
+  "tabOnboarding": {
+    "message": "Onboarding"
+  },
+  "tabSettings": {
+    "message": "Settings"
+  },
+  "step1Title": {
+    "message": "Step 1: Choose channel niche"
+  },
+  "step2Title": {
+    "message": "Step 2: Time and AI preferences"
+  },
+  "step3Title": {
+    "message": "Step 3: Review and finish"
+  },
+  "nextStep": {
+    "message": "Next"
+  },
+  "prevStep": {
+    "message": "Back"
+  },
+  "finishOnboarding": {
+    "message": "Finish"
+  },
+  "onboardingCompleted": {
+    "message": "Onboarding completed! Settings saved."
+  },
+  "nicheGaming": {
+    "message": "Gaming"
+  },
+  "nicheBeauty": {
+    "message": "Beauty"
+  },
+  "nicheEducation": {
+    "message": "Education"
+  },
+  "nicheTech": {
+    "message": "Technology"
+  },
+  "nicheCulinary": {
+    "message": "Culinary"
+  },
+  "nicheFinance": {
+    "message": "Finance"
+  },
+  "nicheOther": {
+    "message": "Other"
+  },
+  "reviewHeading": {
+    "message": "Summary of your choices"
+  },
+  "reviewNiche": {
+    "message": "Selected niche: $1",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "reviewTimezone": {
+    "message": "Timezone: $1",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "reviewStyle": {
+    "message": "AI language style: $1",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "panelSettingsHeading": {
+    "message": "Display and behavior"
+  },
+  "featureVideoPanel": {
+    "message": "Analytics panel on video page"
+  },
+  "featureSearchCard": {
+    "message": "Research card on search page"
+  },
+  "themeHeading": {
+    "message": "Display theme"
+  },
+  "themeSystem": {
+    "message": "System default"
+  },
+  "themeLight": {
+    "message": "Light"
+  },
+  "themeDark": {
+    "message": "Dark"
+  },
+  "accountHeading": {
+    "message": "Manage account"
+  },
+  "deleteAccount": {
+    "message": "Delete account"
+  },
+  "deleteAccountConfirm": {
+    "message": "Are you sure you want to delete your account? All data and tokens will be permanently deleted."
+  },
+  "deleteAccountSuccess": {
+    "message": "Account successfully deleted."
+  },
+  "deleteAccountError": {
+    "message": "Failed to delete account. Please try again."
+  },
+  "googleSignIn": {
+    "message": "Sign in with Google"
+  },
+  "authenticating": {
+    "message": "Connecting to Google..."
+  },
+  "authFailed": {
+    "message": "Google sign-in failed. Please try again."
+  },
+  "authRequiredNotice": {
+    "message": "Please sign in via the extension popup to view full analytics."
+  },
+  "videoNotFound": {
+    "message": "Video data not found on YouTube."
+  },
+  "fetchVideoError": {
+    "message": "Failed to load video analytics."
+  },
+  "retry": {
+    "message": "Retry"
+  },
+  "loginSuccess": {
+    "message": "Successfully signed in."
   }
 }

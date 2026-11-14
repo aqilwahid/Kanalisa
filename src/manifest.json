@@ -12,7 +12,8 @@
   "host_permissions": [
     "https://www.youtube.com/*",
     "https://studio.youtube.com/*",
-    "https://api.kanalisa.id/*"
+    "https://api.kanalisa.id/*",
+    "https://accounts.google.com/*"
   ],
   "background": {
     "service_worker": "background/service-worker.js",

@@ -10,38 +10,64 @@
 <body>
   <main class="k-page">
     <h1 data-i18n="onboardingTitle"></h1>
-    <p class="k-state" data-i18n="onboardingIntro"></p>
+    <div class="k-tabs" role="tablist" aria-label="Kanalisa">
+      <button class="k-tab" type="button" role="tab" id="onboarding-tab" aria-controls="onboarding-panel" aria-selected="true" data-i18n="tabOnboarding"></button>
+      <button class="k-tab" type="button" role="tab" id="settings-tab" aria-controls="settings-panel" aria-selected="false" tabindex="-1" data-i18n="tabSettings"></button>
+    </div>
 
-    <form id="settings-form" class="k-stack" novalidate>
-      <label class="k-label" for="niche"><span data-i18n="niche"></span>
-        <input class="k-field" id="niche" name="niche" type="text" required aria-describedby="niche-error">
-      </label>
-      <p class="k-error" id="niche-error" role="alert" hidden></p>
+    <section id="onboarding-panel" role="tabpanel" aria-labelledby="onboarding-tab">
+      <p class="k-state" data-i18n="onboardingIntro"></p>
+      <form id="onboarding-form" novalidate>
+        <fieldset class="k-step" data-step="1">
+          <legend data-i18n="step1Title"></legend>
+          <div class="k-choice-grid" id="niche-choices"></div>
+          <p class="k-error" id="niche-error" role="alert" hidden></p>
+          <button class="k-button" type="button" data-next data-i18n="nextStep"></button>
+        </fieldset>
+        <fieldset class="k-step" data-step="2" hidden>
+          <legend data-i18n="step2Title"></legend>
+          <label class="k-label" for="timezone"><span data-i18n="timezone"></span>
+            <select class="k-field" id="timezone" name="timezone">
+              <option value="Asia/Jakarta">WIB</option>
+              <option value="Asia/Makassar">WITA</option>
+              <option value="Asia/Jayapura">WIT</option>
+            </select>
+          </label>
+          <label class="k-label" for="languageStyle"><span data-i18n="languageStyle"></span>
+            <select class="k-field" id="languageStyle" name="languageStyle">
+              <option value="formal" data-i18n="styleFormal"></option>
+              <option value="casual" data-i18n="styleCasual"></option>
+              <option value="lightClickbait" data-i18n="styleLightClickbait"></option>
+              <option value="educational" data-i18n="styleEducational"></option>
+            </select>
+          </label>
+          <div class="k-actions"><button class="k-button k-button-quiet" type="button" data-prev data-i18n="prevStep"></button><button class="k-button" type="button" data-next data-i18n="nextStep"></button></div>
+        </fieldset>
+        <fieldset class="k-step" data-step="3" hidden>
+          <legend data-i18n="step3Title"></legend>
+          <h2 data-i18n="reviewHeading"></h2>
+          <dl id="review" class="k-list"></dl>
+          <div class="k-actions"><button class="k-button k-button-quiet" type="button" data-prev data-i18n="prevStep"></button><button class="k-button" type="submit" data-i18n="finishOnboarding"></button></div>
+        </fieldset>
+      </form>
+    </section>
 
-      <label class="k-label" for="timezone"><span data-i18n="timezone"></span>
-        <select class="k-field" id="timezone" name="timezone">
-          <option value="Asia/Jakarta">WIB (Asia/Jakarta)</option>
-          <option value="Asia/Makassar">WITA (Asia/Makassar)</option>
-          <option value="Asia/Jayapura">WIT (Asia/Jayapura)</option>
-        </select>
-      </label>
-
-      <label class="k-label" for="languageStyle"><span data-i18n="languageStyle"></span>
-        <select class="k-field" id="languageStyle" name="languageStyle">
-          <option value="formal" data-i18n="styleFormal"></option>
-          <option value="casual" data-i18n="styleCasual"></option>
-          <option value="lightClickbait" data-i18n="styleLightClickbait"></option>
-          <option value="educational" data-i18n="styleEducational"></option>
-        </select>
-      </label>
-
-      <label class="k-label"><span><input type="checkbox" id="videoPanelEnabled"> <span data-i18n="score"></span></span></label>
-      <label class="k-label"><span><input type="checkbox" id="searchCardEnabled"> <span data-i18n="keywordResearch"></span></span></label>
-
-      <button class="k-button" type="submit" data-i18n="saveSettings"></button>
-      <p class="k-status" id="status" role="status"></p>
-    </form>
+    <section id="settings-panel" role="tabpanel" aria-labelledby="settings-tab" hidden>
+      <form id="settings-form" class="k-stack">
+        <fieldset><legend data-i18n="panelSettingsHeading"></legend>
+          <label class="k-toggle"><input type="checkbox" id="videoPanelEnabled"><span data-i18n="featureVideoPanel"></span></label>
+          <label class="k-toggle"><input type="checkbox" id="searchCardEnabled"><span data-i18n="featureSearchCard"></span></label>
+        </fieldset>
+        <fieldset><legend data-i18n="themeHeading"></legend>
+          <label class="k-label" for="theme"><select class="k-field" id="theme"><option value="system" data-i18n="themeSystem"></option><option value="light" data-i18n="themeLight"></option><option value="dark" data-i18n="themeDark"></option></select></label>
+        </fieldset>
+        <button class="k-button" type="submit" data-i18n="saveSettings"></button>
+      </form>
+      <section class="k-danger"><h2 data-i18n="accountHeading"></h2><button class="k-button k-button-danger" type="button" id="delete-account" data-i18n="deleteAccount"></button></section>
+    </section>
+    <p class="k-status" id="status" role="status"></p>
   </main>
+  <script src="../utils/api.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

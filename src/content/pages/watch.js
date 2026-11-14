@@ -70,7 +70,7 @@
       </section>
       <section role="tabpanel" id="kp-1" aria-labelledby="kt-1" class="kanalisa-tabpanel" hidden>${tagsList}</section>
       <section role="tabpanel" id="kp-2" aria-labelledby="kt-2" class="kanalisa-tabpanel" hidden><ul class="kanalisa-checklist">${checkList}</ul></section>
-      <p class="kanalisa-note">${esc(text('mockNotice'))}</p>`;
+`;
   }
 
   function selectTab(body, index) {
@@ -93,7 +93,8 @@
     body.addEventListener('click', (event) => {
       const control = event.target.closest('button');
       if (!control) return;
-      if (control.dataset.tab) selectTab(body, Number(control.dataset.tab));
+      if (control.dataset.action === 'retry') renderWatchPage();
+      else if (control.dataset.tab) selectTab(body, Number(control.dataset.tab));
       else if (control.dataset.action === 'close') host.remove();
       else if (control.dataset.action === 'expand') {
         const open = control.getAttribute('aria-expanded') !== 'true';
@@ -111,8 +112,21 @@
       selectTab(body, (Number(tab.dataset.tab) + (event.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length);
     });
   }
+  function renderMessage(body, state, messageKey, retry) {
+    body.dataset.state = state;
+    body.innerHTML = `<p class="kanalisa-state${state === 'error' ? ' kanalisa-error' : ''}" role="${state === 'error' ? 'alert' : 'status'}">${esc(text(messageKey))}</p>${retry ? `<button type="button" class="kanalisa-text-button" data-action="retry">${esc(text('retry'))}</button>` : ''}`;
+  }
+
+  // Skor dihitung di klien dengan scoring.js; backend memakai benchmark yang sama sementara data kanal belum tersedia.
+  const BENCHMARKS = { medianVph: 1000, categoryMedianEngagement: 0.02 };
+
+  function toVideo(apiVideo) {
+    return { ...apiVideo, views: apiVideo.viewCount, likes: apiVideo.likeCount, comments: apiVideo.commentCount };
+  }
+
   async function renderWatchPage() {
-    if (!K.extractVideoId()) return;
+    const videoId = K.extractVideoId();
+    if (!videoId) return;
     const mounted = mount();
     if (!mounted) return;
     const { host, body } = mounted;
@@ -121,9 +135,16 @@
       host.remove();
       return;
     }
-    // Fase 2: semua video memakai data contoh; skor tetap dihitung nyata oleh scoring.js.
-    const video = K.mockVideo;
-    renderPanel(body, { video, score: K.calculateKanalisaScore(video, K.mockBenchmarks) });
+    renderMessage(body, 'loading', 'loading');
+    try {
+      const data = await K.bgApi(`/api/video/${encodeURIComponent(videoId)}?includeScore=false&includeChannel=false`);
+      if (!data?.video) return renderMessage(body, 'empty', 'videoNotFound');
+      const video = toVideo(data.video);
+      if (K.extractVideoId() !== videoId) return;
+      renderPanel(body, { video, score: K.calculateKanalisaScore(video, BENCHMARKS) });
+    } catch (error) {
+      renderMessage(body, 'error', /404|not found/i.test(error.message) ? 'videoNotFound' : 'fetchVideoError', true);
+    }
   }
   function clearWatchPage() {
     document.getElementById(PANEL_ID)?.remove();
