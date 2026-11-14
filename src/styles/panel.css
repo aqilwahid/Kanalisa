@@ -1,0 +1,51 @@
+:host { display: block; margin: 0 0 12px; font-family: var(--k-font); color: var(--k-text); }
+.kanalisa-root { background: var(--k-bg); border: 1px solid var(--k-border); border-radius: var(--k-radius); padding: 14px; font-size: 14px; line-height: 1.45; box-sizing: border-box; max-width: 100%; overflow-wrap: anywhere; }
+:host(.kanalisa-collapsed) .kanalisa-panel-body { display: none; }
+
+.kanalisa-state { margin: 0; padding: 8px 0; color: var(--k-muted); }
+.kanalisa-error { color: var(--k-bad); font-weight: 600; }
+
+.kanalisa-panel-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.kanalisa-eyebrow { margin: 0; font-size: 12px; color: var(--k-muted); }
+.kanalisa-title { margin: 2px 0 0; font-size: 18px; font-weight: 700; }
+.kanalisa-score { display: block; font-size: 44px; font-weight: 800; line-height: 1; color: var(--k-accent); font-variant-numeric: tabular-nums; }
+.kanalisa-panel-actions { display: flex; gap: 4px; }
+
+.kanalisa-icon-button { min-width: 44px; min-height: 44px; border: 1px solid var(--k-border); border-radius: var(--k-radius); background: transparent; color: var(--k-text); font-size: 20px; }
+.kanalisa-icon-button:hover { background: var(--k-surface); }
+.kanalisa-icon-button:active { background: var(--k-border); }
+.kanalisa-icon-button:focus-visible, .kanalisa-tag:focus-visible, .kanalisa-text-button:focus-visible { box-shadow: var(--k-focus); outline: none; }
+
+.kanalisa-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin: 12px 0 0; }
+.kanalisa-metrics div { background: var(--k-surface); border-radius: var(--k-radius); padding: 8px 10px; }
+.kanalisa-metrics dt { font-size: 12px; color: var(--k-muted); }
+.kanalisa-metrics dd { margin: 2px 0 0; font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.kanalisa-section { margin-top: 16px; }
+.kanalisa-section h2 { margin: 0 0 8px; font-size: 14px; font-weight: 700; }
+.kanalisa-section-heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.kanalisa-text-button { min-height: 44px; padding: 0 8px; border: 0; background: transparent; color: var(--k-accent); font-weight: 600; text-decoration: underline; }
+.kanalisa-text-button:hover { text-decoration-thickness: 2px; }
+
+.kanalisa-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.kanalisa-tag { min-height: 44px; padding: 0 12px; border: 1px solid var(--k-border); border-radius: var(--k-radius); background: var(--k-surface); color: var(--k-text); font: inherit; }
+.kanalisa-tag:hover { border-color: var(--k-accent); }
+.kanalisa-tag:active { background: var(--k-border); }
+.kanalisa-muted { margin: 0; color: var(--k-muted); }
+
+.kanalisa-checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.kanalisa-check { display: grid; grid-template-columns: 20px 1fr auto; gap: 8px; align-items: baseline; }
+.kanalisa-check-status { font-size: 12px; font-weight: 700; }
+.kanalisa-check-pass { color: var(--k-good); }
+.kanalisa-check-fail { color: var(--k-bad); }
+.kanalisa-check span:nth-child(2) { color: var(--k-text); }
+
+.kanalisa-badge { padding: 6px 10px; border-radius: var(--k-radius); font-weight: 700; font-size: 13px; border: 1px solid currentColor; }
+.kanalisa-badge-high { color: var(--k-good); }
+.kanalisa-badge-medium { color: var(--k-warn); }
+.kanalisa-badge-low { color: var(--k-bad); }
+
+@media (max-width: 480px) {
+  .kanalisa-root { padding: 10px; }
+  .kanalisa-score { font-size: 36px; }
+}

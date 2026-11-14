@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kanalisa</title>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main class="k-page">
+    <h1 data-i18n="onboardingTitle"></h1>
+    <p class="k-state" data-i18n="onboardingIntro"></p>
+
+    <form id="settings-form" class="k-stack" novalidate>
+      <label class="k-label" for="niche"><span data-i18n="niche"></span>
+        <input class="k-field" id="niche" name="niche" type="text" required aria-describedby="niche-error">
+      </label>
+      <p class="k-error" id="niche-error" role="alert" hidden></p>
+
+      <label class="k-label" for="timezone"><span data-i18n="timezone"></span>
+        <select class="k-field" id="timezone" name="timezone">
+          <option value="Asia/Jakarta">WIB (Asia/Jakarta)</option>
+          <option value="Asia/Makassar">WITA (Asia/Makassar)</option>
+          <option value="Asia/Jayapura">WIT (Asia/Jayapura)</option>
+        </select>
+      </label>
+
+      <label class="k-label" for="languageStyle"><span data-i18n="languageStyle"></span>
+        <select class="k-field" id="languageStyle" name="languageStyle">
+          <option value="formal" data-i18n="styleFormal"></option>
+          <option value="casual" data-i18n="styleCasual"></option>
+          <option value="lightClickbait" data-i18n="styleLightClickbait"></option>
+          <option value="educational" data-i18n="styleEducational"></option>
+        </select>
+      </label>
+
+      <label class="k-label"><span><input type="checkbox" id="videoPanelEnabled"> <span data-i18n="score"></span></span></label>
+      <label class="k-label"><span><input type="checkbox" id="searchCardEnabled"> <span data-i18n="keywordResearch"></span></span></label>
+
+      <button class="k-button" type="submit" data-i18n="saveSettings"></button>
+      <p class="k-status" id="status" role="status"></p>
+    </form>
+  </main>
+  <script src="options.js"></script>
+</body>
+</html>

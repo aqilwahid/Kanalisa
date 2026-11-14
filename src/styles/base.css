@@ -1,0 +1,33 @@
+/* Palette from Kanalisa logo: navy #102030 text, blue #2040E0 accent. Contrast verified in panel review. */
+:root,
+:host {
+  --k-bg: #ffffff;
+  --k-surface: #f2f4f8;
+  --k-text: #102030;
+  --k-muted: #4a5a6e;
+  --k-border: #8a97a8;
+  --k-accent: #2040e0;
+  --k-accent-text: #ffffff;
+  --k-good: #0b6b3a;
+  --k-warn: #8a5300;
+  --k-bad: #a3201c;
+  --k-radius: 6px;
+  --k-focus: 0 0 0 2px var(--k-bg), 0 0 0 4px var(--k-accent);
+  --k-font: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --k-bg: #102030; --k-surface: #1a2c40; --k-text: #f2f4f8; --k-muted: #b4c0d0; --k-border: #6f7f94; --k-accent: #8fa6ff; --k-accent-text: #102030; --k-good: #6fdc9f; --k-warn: #f0b860; --k-bad: #ff8f8a; }
+}
+:root[data-theme="dark"] { --k-bg: #102030; --k-surface: #1a2c40; --k-text: #f2f4f8; --k-muted: #b4c0d0; --k-border: #6f7f94; --k-accent: #8fa6ff; --k-accent-text: #102030; --k-good: #6fdc9f; --k-warn: #f0b860; --k-bad: #ff8f8a; }
+
+/* In-page panels follow YouTube's own theme */
+:host-context(html[dark]) { --k-bg: #102030; --k-surface: #1a2c40; --k-text: #f2f4f8; --k-muted: #b4c0d0; --k-border: #6f7f94; --k-accent: #8fa6ff; --k-accent-text: #102030; --k-good: #6fdc9f; --k-warn: #f0b860; --k-bad: #ff8f8a; }
+
+button, a[href], summary, select, label[for], [role="button"] { cursor: pointer; }
+button:disabled, [aria-disabled="true"] { cursor: not-allowed; opacity: 0.6; }
+:focus-visible { outline: 2px solid var(--k-accent); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

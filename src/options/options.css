@@ -1,0 +1,4 @@
+@import url("../styles/popup.css");
+
+.k-page { max-width: 520px; margin: 0 auto; padding: 24px 16px; }
+@media (max-width: 480px) { .k-page { padding: 16px 12px; } }
