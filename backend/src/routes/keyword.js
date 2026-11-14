@@ -1,5 +1,5 @@
 import express from 'express';
-import { getKeywordSuggestions, searchKeyword, enrichKeywordResult } from '../services/keyword.js';
+import { searchKeywords, getRelatedKeywords, getSavedKeywords, saveKeyword, deleteSavedKeyword } from '../services/keyword-mock.js';
 import { authMiddleware, optionalAuthMiddleware } from '../middleware/auth.js';
 import { checkKeywordQuota, incrementKeywordUsage } from '../middleware/rateLimit.js';
 
@@ -23,7 +23,7 @@ router.get('/search', authMiddleware, async (req, res) => {
       });
     }
     
-    const result = await getKeywordSuggestions(q);
+    const result = await searchKeywords(q);
     const limitedResults = {
       ...result,
       relatedKeywords: result.relatedKeywords.slice(0, parseInt(limit, 10)),
@@ -55,14 +55,13 @@ router.get('/related', authMiddleware, async (req, res) => {
       });
     }
     
-    const baseResult = await searchKeyword(q);
-    const enriched = enrichKeywordResult(baseResult);
+    const relatedKeywords = await getRelatedKeywords(q);
     
     await incrementKeywordUsage(req.redis, req.user.id);
     
     res.json({
       query: q,
-      relatedKeywords: enriched.relatedKeywords.slice(0, parseInt(limit, 10)),
+      relatedKeywords: relatedKeywords.slice(0, parseInt(limit, 10)),
     });
   } catch (err) {
     console.error('Related keywords error:', err.message);
@@ -79,20 +78,9 @@ router.post('/save', authMiddleware, async (req, res) => {
     }
     
     const userId = req.user.id;
-    const savedKey = `user:${userId}:saved_keywords`;
-    const saved = await req.redis.smembers(savedKey);
+    const result = await saveKeyword(userId, keyword);
     
-    if (saved.length >= 200) {
-      return res.status(400).json({ error: 'Maximum 200 saved keywords reached' });
-    }
-    
-    if (saved.includes(keyword)) {
-      return res.status(409).json({ error: 'Keyword already saved' });
-    }
-    
-    await req.redis.sadd(savedKey, keyword);
-    
-    res.json({ success: true, keyword });
+    res.json(result);
   } catch (err) {
     console.error('Save keyword error:', err.message);
     res.status(500).json({ error: 'Failed to save keyword' });
@@ -102,10 +90,9 @@ router.post('/save', authMiddleware, async (req, res) => {
 router.get('/saved', authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
-    const savedKey = `user:${userId}:saved_keywords`;
-    const saved = await req.redis.smembers(savedKey);
+    const keywords = await getSavedKeywords(userId);
     
-    res.json({ keywords: saved });
+    res.json({ keywords });
   } catch (err) {
     console.error('Get saved keywords error:', err.message);
     res.status(500).json({ error: 'Failed to fetch saved keywords' });
@@ -116,9 +103,8 @@ router.delete('/saved/:keyword', authMiddleware, async (req, res) => {
   try {
     const { keyword } = req.params;
     const userId = req.user.id;
-    const savedKey = `user:${userId}:saved_keywords`;
     
-    await req.redis.srem(savedKey, keyword);
+    await deleteSavedKeyword(userId, keyword);
     
     res.json({ success: true });
   } catch (err) {

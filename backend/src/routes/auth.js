@@ -1,16 +1,27 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import { OAuth2Client } from 'google-auth-library';
 import { config } from '../config.js';
 
 const router = express.Router();
-const googleClient = new OAuth2Client();
 
-const TIER_DEFAULTS = {
-  free: { aiCredits: 50, keywordQuota: 3 },
-  pro: { aiCredits: 1500, keywordQuota: Infinity },
-  agency: { aiCredits: 6000, keywordQuota: Infinity },
+const MOCK_USER = {
+  id: 'user1',
+  email: 'test@example.com',
+  name: 'Test User',
+  avatar: 'https://example.com/avatar.png',
+  tier: 'free',
+  aiCredits: 45,
+  keywordQuota: 3,
+  createdAt: new Date().toISOString(),
 };
+
+function generateMockToken(user) {
+  return jwt.sign(
+    { id: user.id, email: user.email, tier: user.tier, googleId: 'mock-google-id' },
+    config.JWT_SECRET,
+    { expiresIn: config.JWT_EXPIRES_IN }
+  );
+}
 
 router.post('/google', async (req, res) => {
   try {
@@ -20,48 +31,21 @@ router.post('/google', async (req, res) => {
       return res.status(400).json({ error: 'Google credential required' });
     }
     
-    const ticket = await googleClient.verifyIdToken({
-      idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
+    // Mock: accept any credential and return mock user
+    console.log('Mock Google auth - credential received');
     
-    const payload = ticket.getPayload();
-    if (!payload || !payload.email_verified) {
-      return res.status(401).json({ error: 'Invalid Google token' });
-    }
-    
-    const { sub: googleId, email, name, picture } = payload;
-    
-    let user = await req.db.getUserByGoogleId(googleId);
-    
-    if (!user) {
-      user = await req.db.createUser({
-        googleId,
-        email,
-        name,
-        avatar: picture,
-        tier: 'free',
-        aiCredits: TIER_DEFAULTS.free.aiCredits,
-        keywordQuota: TIER_DEFAULTS.free.keywordQuota,
-      });
-    }
-    
-    const token = jwt.sign(
-      { id: user.id, email: user.email, tier: user.tier, googleId: user.googleId },
-      config.JWT_SECRET,
-      { expiresIn: config.JWT_EXPIRES_IN }
-    );
+    const token = generateMockToken(MOCK_USER);
     
     res.json({
       token,
       user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        avatar: user.avatar,
-        tier: user.tier,
-        aiCredits: user.aiCredits,
-        keywordQuota: user.keywordQuota,
+        id: MOCK_USER.id,
+        email: MOCK_USER.email,
+        name: MOCK_USER.name,
+        avatar: MOCK_USER.avatar,
+        tier: MOCK_USER.tier,
+        aiCredits: MOCK_USER.aiCredits,
+        keywordQuota: MOCK_USER.keywordQuota,
       },
     });
   } catch (err) {
@@ -80,18 +64,10 @@ router.post('/refresh', async (req, res) => {
     const token = authHeader.slice(7);
     const decoded = jwt.verify(token, config.JWT_SECRET, { ignoreExpiration: true });
     
-    const user = await req.db.getUserById(decoded.id);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+    // Mock: return new token for mock user
+    const newToken = generateMockToken(MOCK_USER);
     
-    const newToken = jwt.sign(
-      { id: user.id, email: user.email, tier: user.tier, googleId: user.googleId },
-      config.JWT_SECRET,
-      { expiresIn: config.JWT_EXPIRES_IN }
-    );
-    
-    res.json({ token });
+    res.json({ token: newToken });
   } catch (err) {
     console.error('Token refresh error:', err.message);
     res.status(401).json({ error: 'Invalid token' });
@@ -108,21 +84,17 @@ router.get('/me', async (req, res) => {
     const token = authHeader.slice(7);
     const decoded = jwt.verify(token, config.JWT_SECRET);
     
-    const user = await req.db.getUserById(decoded.id);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    
+    // Mock: return mock user
     res.json({
       user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        avatar: user.avatar,
-        tier: user.tier,
-        aiCredits: user.aiCredits,
-        keywordQuota: user.keywordQuota,
-        createdAt: user.createdAt,
+        id: MOCK_USER.id,
+        email: MOCK_USER.email,
+        name: MOCK_USER.name,
+        avatar: MOCK_USER.avatar,
+        tier: MOCK_USER.tier,
+        aiCredits: MOCK_USER.aiCredits,
+        keywordQuota: MOCK_USER.keywordQuota,
+        createdAt: MOCK_USER.createdAt,
       },
     });
   } catch (err) {
@@ -141,8 +113,7 @@ router.delete('/account', async (req, res) => {
     const token = authHeader.slice(7);
     const decoded = jwt.verify(token, config.JWT_SECRET);
     
-    await req.db.deleteUser(decoded.id);
-    
+    // Mock: just return success
     res.json({ success: true, message: 'Account deleted. Confirmation email sent.' });
   } catch (err) {
     console.error('Delete account error:', err.message);

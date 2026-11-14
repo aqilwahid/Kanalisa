@@ -9,6 +9,7 @@ import keywordRoutes from './routes/keyword.js';
 import aiRoutes from './routes/ai.js';
 import authRoutes from './routes/auth.js';
 import billingRoutes from './routes/billing.js';
+import userRoutes from './routes/user.js';
 
 const app = express();
 
@@ -23,10 +24,64 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 let redis = null;
+let redisConnected = false;
+
+async function initRedis() {
+  try {
+    redis = await connectRedis();
+    redisConnected = true;
+    console.log('Redis connected successfully');
+  } catch (err) {
+    console.warn('Redis connection failed, running in mock mode without Redis:', err.message);
+    redisConnected = false;
+    // Create a mock Redis client for rate limiting
+    redis = createMockRedis();
+  }
+}
+
+function createMockRedis() {
+  const store = new Map();
+  return {
+    get: async (key) => store.get(key) || null,
+    set: async (key, value) => { store.set(key, value); return 'OK'; },
+    setex: async (key, ttl, value) => { store.set(key, value); return 'OK'; },
+    del: async (key) => { store.delete(key); return 1; },
+    incr: async (key) => { const val = (store.get(key) || 0) + 1; store.set(key, val); return val; },
+    expire: async (key, ttl) => 1,
+    smembers: async (key) => Array.from(store.get(key) || new Set()),
+    sadd: async (key, ...members) => { 
+      const set = store.get(key) || new Set(); 
+      members.forEach(m => set.add(m)); 
+      store.set(key, set); 
+      return members.length; 
+    },
+    srem: async (key, member) => { 
+      const set = store.get(key) || new Set(); 
+      set.delete(member); 
+      store.set(key, set); 
+      return 1; 
+    },
+    mget: async (...keys) => keys.map(k => store.get(k) || null),
+    pipeline: () => {
+      const commands = [];
+      return {
+        setex: (key, ttl, value) => { commands.push(['setex', key, ttl, value]); return this; },
+        exec: async () => { 
+          for (const [cmd, key, ttl, value] of commands) {
+            if (cmd === 'setex') store.set(key, value);
+          }
+          return commands.map(() => [null, 'OK']);
+        },
+      };
+    },
+    quit: async () => 'OK',
+    status: 'ready',
+  };
+}
 
 app.use(async (req, res, next) => {
   if (!redis) {
-    redis = await connectRedis();
+    await initRedis();
   }
   req.redis = redis;
   req.db = {
@@ -59,6 +114,7 @@ app.use('/api/keyword', keywordRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/billing', billingRoutes);
+app.use('/api/user', userRoutes);
 
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
