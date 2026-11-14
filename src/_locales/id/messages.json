@@ -1,230 +1,282 @@
 {
-    "extensionName":  {
-                          "message":  "Kanalisa"
-                      },
-    "extensionDescription":  {
-                                 "message":  "Analitik dan SEO YouTube untuk kreator Indonesia."
-                             },
-    "statusTitle":  {
-                        "message":  "Status Kanalisa"
-                    },
-    "notSignedIn":  {
-                        "message":  "Belum masuk"
-                    },
-    "signedIn":  {
-                     "message":  "Sudah masuk"
-                 },
-    "signIn":  {
-                   "message":  "Masuk dengan Google"
-               },
-    "aiCredits":  {
-                      "message":  "Kredit AI"
-                  },
-    "keywordQuota":  {
-                         "message":  "Kuota kata kunci"
-                     },
-    "settings":  {
-                     "message":  "Pengaturan"
-                 },
-    "openSettings":  {
-                         "message":  "Buka pengaturan"
-                     },
-    "score":  {
-                  "message":  "Skor Kanalisa"
-              },
-    "views":  {
-                  "message":  "Tayangan"
-              },
-    "viewsPerHour":  {
-                         "message":  "Tayangan per jam (TPJ)"
-                     },
-    "viewsPerHourTip":  {
-                            "message":  "Kecepatan video mendapat tayangan saat ini"
-                        },
-    "subscribers":  {
-                        "message":  "Subscriber"
-                    },
-    "outlier":  {
-                    "message":  "Video meledak"
-                },
-    "outlierRatio":  {
-                         "message":  "$1Ã— rata-rata kanal",
-                         "placeholders":  {
-                                              "1":  {
-                                                        "content":  "$1"
-                                                    }
-                                          }
-                     },
-    "channelAudit":  {
-                         "message":  "Audit kanal"
-                     },
-    "thumbnail":  {
-                      "message":  "Thumbnail"
-                  },
-    "upgradePro":  {
-                       "message":  "Tingkatkan ke Pro"
-                   },
-    "likes":  {
-                  "message":  "Suka"
-              },
-    "comments":  {
-                     "message":  "Komentar"
-                 },
-    "engagementRate":  {
-                           "message":  "Tingkat interaksi"
-                       },
-    "videoAge":  {
-                     "message":  "Umur video"
-                 },
-    "tags":  {
-                 "message":  "Tag"
-             },
-    "copyAll":  {
-                    "message":  "Salin semua"
-                },
-    "copied":  {
-                   "message":  "Tersalin"
-               },
-    "noTags":  {
-                   "message":  "Video ini tidak memakai tag"
-               },
-    "seoChecklist":  {
-                         "message":  "Pemeriksaan SEO"
-                     },
-    "loading":  {
-                    "message":  "Memuat data video"
-                },
-    "error":  {
-                  "message":  "Data video tidak dapat dimuat. Coba muat ulang halaman."
-              },
-    "empty":  {
-                  "message":  "Buka video YouTube untuk melihat analisis."
-              },
-    "keywordResearch":  {
-                            "message":  "Riset kata kunci"
-                        },
-    "relativeVolume":  {
-                           "message":  "Volume pencarian relatif"
-                       },
-    "competition":  {
-                        "message":  "Persaingan"
-                    },
-    "opportunity":  {
-                        "message":  "Peluang"
-                    },
-    "highOpportunity":  {
-                            "message":  "Peluang tinggi"
-                        },
-    "mediumOpportunity":  {
-                              "message":  "Peluang sedang"
-                          },
-    "lowOpportunity":  {
-                           "message":  "Peluang rendah"
-                       },
-    "relatedKeywords":  {
-                            "message":  "Kata kunci terkait"
-                        },
-    "noSearchQuery":  {
-                          "message":  "Masukkan kata kunci di pencarian YouTube."
-                      },
-    "quotaReset":  {
-                       "message":  "Kuota kata kunci telah direset."
-                   },
-    "onboardingTitle":  {
-                            "message":  "Siapkan Kanalisa"
-                        },
-    "onboardingIntro":  {
-                            "message":  "Pilih pengaturan untuk menyesuaikan rekomendasi."
-                        },
-    "niche":  {
-                  "message":  "Niche kanal"
-              },
-    "timezone":  {
-                     "message":  "Zona waktu"
-                 },
-    "languageStyle":  {
-                          "message":  "Gaya bahasa AI"
-                      },
-    "nichePlaceholder":  {
-                             "message":  "Contoh: kuliner, teknologi, edukasi"
-                         },
-    "styleFormal":  {
-                        "message":  "Formal"
-                    },
-    "styleCasual":  {
-                        "message":  "Santai"
-                    },
-    "styleLightClickbait":  {
-                                "message":  "Clickbait ringan"
-                            },
-    "styleEducational":  {
-                             "message":  "Edukatif"
-                         },
-    "saveSettings":  {
-                         "message":  "Simpan pengaturan"
-                     },
-    "settingsSaved":  {
-                          "message":  "Pengaturan tersimpan."
-                      },
-    "requiredField":  {
-                          "message":  "Lengkapi pengaturan ini."
-                      },
-    "collapsePanel":  {
-                          "message":  "Ciutkan panel"
-                      },
-    "expandPanel":  {
-                        "message":  "Buka panel"
-                    },
-    "closePanel":  {
-                       "message":  "Tutup panel"
-                   },
-    "titleLength":  {
-                        "message":  "Panjang judul 40 sampai 100 karakter"
-                    },
-    "descriptionLength":  {
-                              "message":  "Deskripsi minimal 150 karakter"
-                          },
-    "tagCount":  {
-                     "message":  "Gunakan 5 sampai 15 tag"
-                 },
-    "hasLinks":  {
-                     "message":  "Deskripsi memuat tautan"
-                 },
-    "hasTimestamps":  {
-                          "message":  "Deskripsi memuat timestamp"
-                      },
-    "hasHashtags":  {
-                        "message":  "Deskripsi memuat hashtag"
-                    },
-    "keywordMatch":  {
-                         "message":  "Kata kunci muncul di judul, deskripsi, dan tag"
-                     },
-    "checkPassed":  {
-                        "message":  "Sesuai"
-                    },
-    "checkNeedsAttention":  {
-                                "message":  "Perlu diperbaiki"
-                            },
-    "unknown":  {
-                    "message":  "Belum tersedia"
-                },
-    "hoursUnit":  {
-                      "placeholders":  {
-                                           "1":  {
-                                                     "content":  "`$1"
-                                                 }
-                                       },
-                      "message":  "`$1 jam"
-                  },
-    "daysUnit":  {
-                     "placeholders":  {
-                                          "1":  {
-                                                    "content":  "`$1"
-                                                }
-                                      },
-                     "message":  "`$1 hari"
-                 },
-    "lessThanOneHour":  {
-                            "message":  "\u003c 1 jam"
-                        }
+  "extensionName": {
+    "message": "Kanalisa"
+  },
+  "extensionDescription": {
+    "message": "Analitik dan SEO YouTube untuk kreator Indonesia."
+  },
+  "statusTitle": {
+    "message": "Status Kanalisa"
+  },
+  "notSignedIn": {
+    "message": "Belum masuk"
+  },
+  "signedIn": {
+    "message": "Sudah masuk"
+  },
+  "signIn": {
+    "message": "Masuk dengan Google"
+  },
+  "aiCredits": {
+    "message": "Kredit AI"
+  },
+  "keywordQuota": {
+    "message": "Kuota kata kunci"
+  },
+  "settings": {
+    "message": "Pengaturan"
+  },
+  "openSettings": {
+    "message": "Buka pengaturan"
+  },
+  "score": {
+    "message": "Skor Kanalisa"
+  },
+  "views": {
+    "message": "Tayangan"
+  },
+  "viewsPerHour": {
+    "message": "Tayangan per jam (TPJ)"
+  },
+  "viewsPerHourTip": {
+    "message": "Kecepatan video mendapat tayangan saat ini"
+  },
+  "subscribers": {
+    "message": "Subscriber"
+  },
+  "outlier": {
+    "message": "Video meledak"
+  },
+  "outlierRatio": {
+    "message": "$1× rata-rata kanal",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "channelAudit": {
+    "message": "Audit kanal"
+  },
+  "thumbnail": {
+    "message": "Thumbnail"
+  },
+  "upgradePro": {
+    "message": "Tingkatkan ke Pro"
+  },
+  "likes": {
+    "message": "Suka"
+  },
+  "comments": {
+    "message": "Komentar"
+  },
+  "engagementRate": {
+    "message": "Tingkat interaksi"
+  },
+  "videoAge": {
+    "message": "Umur video"
+  },
+  "tags": {
+    "message": "Tag"
+  },
+  "copyAll": {
+    "message": "Salin semua"
+  },
+  "copied": {
+    "message": "Tersalin"
+  },
+  "noTags": {
+    "message": "Video ini tidak memakai tag"
+  },
+  "seoChecklist": {
+    "message": "Pemeriksaan SEO"
+  },
+  "loading": {
+    "message": "Memuat data video"
+  },
+  "error": {
+    "message": "Data video tidak dapat dimuat. Coba muat ulang halaman."
+  },
+  "empty": {
+    "message": "Buka video YouTube untuk melihat analisis."
+  },
+  "keywordResearch": {
+    "message": "Riset kata kunci"
+  },
+  "relativeVolume": {
+    "message": "Volume pencarian relatif"
+  },
+  "competition": {
+    "message": "Persaingan"
+  },
+  "opportunity": {
+    "message": "Peluang"
+  },
+  "highOpportunity": {
+    "message": "Peluang tinggi"
+  },
+  "mediumOpportunity": {
+    "message": "Peluang sedang"
+  },
+  "lowOpportunity": {
+    "message": "Peluang rendah"
+  },
+  "relatedKeywords": {
+    "message": "Kata kunci terkait"
+  },
+  "noSearchQuery": {
+    "message": "Masukkan kata kunci di pencarian YouTube."
+  },
+  "quotaReset": {
+    "message": "Kuota kata kunci telah direset."
+  },
+  "onboardingTitle": {
+    "message": "Siapkan Kanalisa"
+  },
+  "onboardingIntro": {
+    "message": "Pilih pengaturan untuk menyesuaikan rekomendasi."
+  },
+  "niche": {
+    "message": "Niche kanal"
+  },
+  "timezone": {
+    "message": "Zona waktu"
+  },
+  "languageStyle": {
+    "message": "Gaya bahasa AI"
+  },
+  "nichePlaceholder": {
+    "message": "Contoh: kuliner, teknologi, edukasi"
+  },
+  "styleFormal": {
+    "message": "Formal"
+  },
+  "styleCasual": {
+    "message": "Santai"
+  },
+  "styleLightClickbait": {
+    "message": "Clickbait ringan"
+  },
+  "styleEducational": {
+    "message": "Edukatif"
+  },
+  "saveSettings": {
+    "message": "Simpan pengaturan"
+  },
+  "settingsSaved": {
+    "message": "Pengaturan tersimpan."
+  },
+  "requiredField": {
+    "message": "Lengkapi pengaturan ini."
+  },
+  "collapsePanel": {
+    "message": "Ciutkan panel"
+  },
+  "expandPanel": {
+    "message": "Buka panel"
+  },
+  "closePanel": {
+    "message": "Tutup panel"
+  },
+  "titleLength": {
+    "message": "Panjang judul 40 sampai 100 karakter"
+  },
+  "descriptionLength": {
+    "message": "Deskripsi minimal 150 karakter"
+  },
+  "tagCount": {
+    "message": "Gunakan 5 sampai 15 tag"
+  },
+  "hasLinks": {
+    "message": "Deskripsi memuat tautan"
+  },
+  "hasTimestamps": {
+    "message": "Deskripsi memuat timestamp"
+  },
+  "hasHashtags": {
+    "message": "Deskripsi memuat hashtag"
+  },
+  "keywordMatch": {
+    "message": "Kata kunci muncul di judul, deskripsi, dan tag"
+  },
+  "checkPassed": {
+    "message": "Sesuai"
+  },
+  "checkNeedsAttention": {
+    "message": "Perlu diperbaiki"
+  },
+  "unknown": {
+    "message": "Belum tersedia"
+  },
+  "hoursUnit": {
+    "placeholders": {
+      "1": {
+        "content": "`$1"
+      }
+    },
+    "message": "`$1 jam"
+  },
+  "daysUnit": {
+    "placeholders": {
+      "1": {
+        "content": "`$1"
+      }
+    },
+    "message": "`$1 hari"
+  },
+  "lessThanOneHour": {
+    "message": "< 1 jam"
+  },
+  "tabSummary": {
+    "message": "Ringkas"
+  },
+  "tabTags": {
+    "message": "Tag"
+  },
+  "tabSeo": {
+    "message": "SEO"
+  },
+  "ratingGood": {
+    "message": "Bagus"
+  },
+  "ratingFair": {
+    "message": "Cukup"
+  },
+  "ratingLow": {
+    "message": "Perlu ditingkatkan"
+  },
+  "seeMore": {
+    "message": "Lihat lebih"
+  },
+  "seeLess": {
+    "message": "Lihat lebih sedikit"
+  },
+  "mockNotice": {
+    "message": "Data contoh untuk pengujian, bukan data YouTube asli."
+  },
+  "keywordLabel": {
+    "message": "Keyword: $1",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "noMockKeyword": {
+    "message": "Belum ada data contoh untuk kata kunci ini. Coba: cara membuat ayam geprek."
+  },
+  "loginPlaceholder": {
+    "message": "Login dengan Google"
+  },
+  "connectedAs": {
+    "message": "Terkoneksi sebagai $1",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "signOutDummy": {
+    "message": "Keluar"
+  }
 }

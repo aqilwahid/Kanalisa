@@ -1,230 +1,282 @@
 {
-    "extensionName":  {
-                          "message":  "Kanalisa"
-                      },
-    "extensionDescription":  {
-                                 "message":  "YouTube analytics and SEO for Indonesian creators."
-                             },
-    "statusTitle":  {
-                        "message":  "Kanalisa status"
-                    },
-    "notSignedIn":  {
-                        "message":  "Not signed in"
-                    },
-    "signedIn":  {
-                     "message":  "Signed in"
-                 },
-    "signIn":  {
-                   "message":  "Sign in with Google"
-               },
-    "aiCredits":  {
-                      "message":  "AI credits"
-                  },
-    "keywordQuota":  {
-                         "message":  "Keyword quota"
-                     },
-    "settings":  {
-                     "message":  "Settings"
-                 },
-    "openSettings":  {
-                         "message":  "Open settings"
-                     },
-    "score":  {
-                  "message":  "Kanalisa score"
-              },
-    "views":  {
-                  "message":  "Views"
-              },
-    "viewsPerHour":  {
-                         "message":  "Views per hour (VPH)"
-                     },
-    "viewsPerHourTip":  {
-                            "message":  "How fast the video is getting views right now"
-                        },
-    "subscribers":  {
-                        "message":  "Subscribers"
-                    },
-    "outlier":  {
-                    "message":  "Outlier"
-                },
-    "outlierRatio":  {
-                         "message":  "$1Ã— channel average",
-                         "placeholders":  {
-                                              "1":  {
-                                                        "content":  "$1"
-                                                    }
-                                          }
-                     },
-    "channelAudit":  {
-                         "message":  "Channel audit"
-                     },
-    "thumbnail":  {
-                      "message":  "Thumbnail"
-                  },
-    "upgradePro":  {
-                       "message":  "Upgrade to Pro"
-                   },
-    "likes":  {
-                  "message":  "Likes"
-              },
-    "comments":  {
-                     "message":  "Comments"
-                 },
-    "engagementRate":  {
-                           "message":  "Engagement rate"
-                       },
-    "videoAge":  {
-                     "message":  "Video age"
-                 },
-    "tags":  {
-                 "message":  "Tags"
-             },
-    "copyAll":  {
-                    "message":  "Copy all"
-                },
-    "copied":  {
-                   "message":  "Copied"
-               },
-    "noTags":  {
-                   "message":  "This video has no tags"
-               },
-    "seoChecklist":  {
-                         "message":  "SEO checks"
-                     },
-    "loading":  {
-                    "message":  "Loading video data"
-                },
-    "error":  {
-                  "message":  "Video data could not be loaded. Reload the page."
-              },
-    "empty":  {
-                  "message":  "Open a YouTube video to see the analysis."
-              },
-    "keywordResearch":  {
-                            "message":  "Keyword research"
-                        },
-    "relativeVolume":  {
-                           "message":  "Relative search volume"
-                       },
-    "competition":  {
-                        "message":  "Competition"
-                    },
-    "opportunity":  {
-                        "message":  "Opportunity"
-                    },
-    "highOpportunity":  {
-                            "message":  "High opportunity"
-                        },
-    "mediumOpportunity":  {
-                              "message":  "Medium opportunity"
-                          },
-    "lowOpportunity":  {
-                           "message":  "Low opportunity"
-                       },
-    "relatedKeywords":  {
-                            "message":  "Related keywords"
-                        },
-    "noSearchQuery":  {
-                          "message":  "Enter a keyword in YouTube search."
-                      },
-    "quotaReset":  {
-                       "message":  "Keyword quota has been reset."
-                   },
-    "onboardingTitle":  {
-                            "message":  "Set up Kanalisa"
-                        },
-    "onboardingIntro":  {
-                            "message":  "Choose settings to tailor the recommendations."
-                        },
-    "niche":  {
-                  "message":  "Channel niche"
-              },
-    "timezone":  {
-                     "message":  "Time zone"
-                 },
-    "languageStyle":  {
-                          "message":  "AI language style"
-                      },
-    "nichePlaceholder":  {
-                             "message":  "Example: food, tech, education"
-                         },
-    "styleFormal":  {
-                        "message":  "Formal"
-                    },
-    "styleCasual":  {
-                        "message":  "Casual"
-                    },
-    "styleLightClickbait":  {
-                                "message":  "Light clickbait"
-                            },
-    "styleEducational":  {
-                             "message":  "Educational"
-                         },
-    "saveSettings":  {
-                         "message":  "Save settings"
-                     },
-    "settingsSaved":  {
-                          "message":  "Settings saved."
-                      },
-    "requiredField":  {
-                          "message":  "Complete this setting."
-                      },
-    "collapsePanel":  {
-                          "message":  "Collapse panel"
-                      },
-    "expandPanel":  {
-                        "message":  "Expand panel"
-                    },
-    "closePanel":  {
-                       "message":  "Close panel"
-                   },
-    "titleLength":  {
-                        "message":  "Title length 40 to 100 characters"
-                    },
-    "descriptionLength":  {
-                              "message":  "Description of at least 150 characters"
-                          },
-    "tagCount":  {
-                     "message":  "Use 5 to 15 tags"
-                 },
-    "hasLinks":  {
-                     "message":  "Description contains links"
-                 },
-    "hasTimestamps":  {
-                          "message":  "Description contains timestamps"
-                      },
-    "hasHashtags":  {
-                        "message":  "Description contains hashtags"
-                    },
-    "keywordMatch":  {
-                         "message":  "Keyword appears in title, description, and tags"
-                     },
-    "checkPassed":  {
-                        "message":  "Pass"
-                    },
-    "checkNeedsAttention":  {
-                                "message":  "Needs work"
-                            },
-    "unknown":  {
-                    "message":  "Not available"
-                },
-    "hoursUnit":  {
-                      "placeholders":  {
-                                           "1":  {
-                                                     "content":  "`$1"
-                                                 }
-                                       },
-                      "message":  "`$1 hours"
-                  },
-    "daysUnit":  {
-                     "placeholders":  {
-                                          "1":  {
-                                                    "content":  "`$1"
-                                                }
-                                      },
-                     "message":  "`$1 days"
-                 },
-    "lessThanOneHour":  {
-                            "message":  "\u003c 1 hour"
-                        }
+  "extensionName": {
+    "message": "Kanalisa"
+  },
+  "extensionDescription": {
+    "message": "YouTube analytics and SEO for Indonesian creators."
+  },
+  "statusTitle": {
+    "message": "Kanalisa status"
+  },
+  "notSignedIn": {
+    "message": "Not signed in"
+  },
+  "signedIn": {
+    "message": "Signed in"
+  },
+  "signIn": {
+    "message": "Sign in with Google"
+  },
+  "aiCredits": {
+    "message": "AI credits"
+  },
+  "keywordQuota": {
+    "message": "Keyword quota"
+  },
+  "settings": {
+    "message": "Settings"
+  },
+  "openSettings": {
+    "message": "Open settings"
+  },
+  "score": {
+    "message": "Kanalisa score"
+  },
+  "views": {
+    "message": "Views"
+  },
+  "viewsPerHour": {
+    "message": "Views per hour (VPH)"
+  },
+  "viewsPerHourTip": {
+    "message": "How fast the video is getting views right now"
+  },
+  "subscribers": {
+    "message": "Subscribers"
+  },
+  "outlier": {
+    "message": "Outlier"
+  },
+  "outlierRatio": {
+    "message": "$1× channel average",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "channelAudit": {
+    "message": "Channel audit"
+  },
+  "thumbnail": {
+    "message": "Thumbnail"
+  },
+  "upgradePro": {
+    "message": "Upgrade to Pro"
+  },
+  "likes": {
+    "message": "Likes"
+  },
+  "comments": {
+    "message": "Comments"
+  },
+  "engagementRate": {
+    "message": "Engagement rate"
+  },
+  "videoAge": {
+    "message": "Video age"
+  },
+  "tags": {
+    "message": "Tags"
+  },
+  "copyAll": {
+    "message": "Copy all"
+  },
+  "copied": {
+    "message": "Copied"
+  },
+  "noTags": {
+    "message": "This video has no tags"
+  },
+  "seoChecklist": {
+    "message": "SEO checks"
+  },
+  "loading": {
+    "message": "Loading video data"
+  },
+  "error": {
+    "message": "Video data could not be loaded. Reload the page."
+  },
+  "empty": {
+    "message": "Open a YouTube video to see the analysis."
+  },
+  "keywordResearch": {
+    "message": "Keyword research"
+  },
+  "relativeVolume": {
+    "message": "Relative search volume"
+  },
+  "competition": {
+    "message": "Competition"
+  },
+  "opportunity": {
+    "message": "Opportunity"
+  },
+  "highOpportunity": {
+    "message": "High opportunity"
+  },
+  "mediumOpportunity": {
+    "message": "Medium opportunity"
+  },
+  "lowOpportunity": {
+    "message": "Low opportunity"
+  },
+  "relatedKeywords": {
+    "message": "Related keywords"
+  },
+  "noSearchQuery": {
+    "message": "Enter a keyword in YouTube search."
+  },
+  "quotaReset": {
+    "message": "Keyword quota has been reset."
+  },
+  "onboardingTitle": {
+    "message": "Set up Kanalisa"
+  },
+  "onboardingIntro": {
+    "message": "Choose settings to tailor the recommendations."
+  },
+  "niche": {
+    "message": "Channel niche"
+  },
+  "timezone": {
+    "message": "Time zone"
+  },
+  "languageStyle": {
+    "message": "AI language style"
+  },
+  "nichePlaceholder": {
+    "message": "Example: food, tech, education"
+  },
+  "styleFormal": {
+    "message": "Formal"
+  },
+  "styleCasual": {
+    "message": "Casual"
+  },
+  "styleLightClickbait": {
+    "message": "Light clickbait"
+  },
+  "styleEducational": {
+    "message": "Educational"
+  },
+  "saveSettings": {
+    "message": "Save settings"
+  },
+  "settingsSaved": {
+    "message": "Settings saved."
+  },
+  "requiredField": {
+    "message": "Complete this setting."
+  },
+  "collapsePanel": {
+    "message": "Collapse panel"
+  },
+  "expandPanel": {
+    "message": "Expand panel"
+  },
+  "closePanel": {
+    "message": "Close panel"
+  },
+  "titleLength": {
+    "message": "Title length 40 to 100 characters"
+  },
+  "descriptionLength": {
+    "message": "Description of at least 150 characters"
+  },
+  "tagCount": {
+    "message": "Use 5 to 15 tags"
+  },
+  "hasLinks": {
+    "message": "Description contains links"
+  },
+  "hasTimestamps": {
+    "message": "Description contains timestamps"
+  },
+  "hasHashtags": {
+    "message": "Description contains hashtags"
+  },
+  "keywordMatch": {
+    "message": "Keyword appears in title, description, and tags"
+  },
+  "checkPassed": {
+    "message": "Pass"
+  },
+  "checkNeedsAttention": {
+    "message": "Needs work"
+  },
+  "unknown": {
+    "message": "Not available"
+  },
+  "hoursUnit": {
+    "placeholders": {
+      "1": {
+        "content": "`$1"
+      }
+    },
+    "message": "`$1 hours"
+  },
+  "daysUnit": {
+    "placeholders": {
+      "1": {
+        "content": "`$1"
+      }
+    },
+    "message": "`$1 days"
+  },
+  "lessThanOneHour": {
+    "message": "< 1 hour"
+  },
+  "tabSummary": {
+    "message": "Summary"
+  },
+  "tabTags": {
+    "message": "Tags"
+  },
+  "tabSeo": {
+    "message": "SEO"
+  },
+  "ratingGood": {
+    "message": "Good"
+  },
+  "ratingFair": {
+    "message": "Fair"
+  },
+  "ratingLow": {
+    "message": "Needs work"
+  },
+  "seeMore": {
+    "message": "See more"
+  },
+  "seeLess": {
+    "message": "See less"
+  },
+  "mockNotice": {
+    "message": "Sample data for testing, not real YouTube data."
+  },
+  "keywordLabel": {
+    "message": "Keyword: $1",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "noMockKeyword": {
+    "message": "No sample data for this keyword yet. Try: cara membuat ayam geprek."
+  },
+  "loginPlaceholder": {
+    "message": "Sign in with Google"
+  },
+  "connectedAs": {
+    "message": "Connected as $1",
+    "placeholders": {
+      "1": {
+        "content": "$1"
+      }
+    }
+  },
+  "signOutDummy": {
+    "message": "Sign out"
+  }
 }

@@ -1,4 +1,5 @@
-:host { display: block; margin: 0 0 12px; font-family: var(--k-font); color: var(--k-text); }
+:host { display: block; width: min(320px, 100%); max-width: 100%; margin: 0 0 12px; font-family: var(--k-font); color: var(--k-text); }
+:host-context(.dark-mode), :host-context(html[dark]) { --k-bg: #102030; --k-surface: #172b3e; --k-text: #f5f8fb; --k-muted: #b8c5d1; --k-border: #496174; }
 .kanalisa-root { background: var(--k-bg); border: 1px solid var(--k-border); border-radius: var(--k-radius); padding: 14px; font-size: 14px; line-height: 1.45; box-sizing: border-box; max-width: 100%; overflow-wrap: anywhere; }
 :host(.kanalisa-collapsed) .kanalisa-panel-body { display: none; }
 
@@ -49,3 +50,17 @@
   .kanalisa-root { padding: 10px; }
   .kanalisa-score { font-size: 36px; }
 }
+
+.kanalisa-hero { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; margin-top: 12px; }
+.kanalisa-tablist { display: flex; gap: 4px; margin-top: 12px; border-bottom: 1px solid var(--k-border); }
+.kanalisa-tab { flex: 1; min-height: 44px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--k-muted); font: inherit; font-weight: 600; cursor: pointer; }
+.kanalisa-tab:hover { color: var(--k-text); background: var(--k-surface); }
+.kanalisa-tab[aria-selected="true"] { color: var(--k-text); border-bottom-color: var(--k-accent); }
+.kanalisa-tab:focus-visible { box-shadow: var(--k-focus); outline: none; }
+.kanalisa-tabpanel[hidden], .kanalisa-metrics[hidden] { display: none; }
+.kanalisa-note { margin: 12px 0 0; font-size: 12px; color: var(--k-muted); }
+.kanalisa-opp-high { color: var(--k-good); }
+.kanalisa-opp-medium { color: var(--k-warn); }
+.kanalisa-opp-low { color: var(--k-bad); }
+.kanalisa-icon-button, .kanalisa-text-button, .kanalisa-tag { cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
