@@ -1,0 +1,125 @@
+{
+  "installed": [
+    {
+      "id": "dev",
+      "category": "skill",
+      "source": "microsoft/playwright-cli",
+      "branch": "main",
+      "targetPath": ".claude/skills/dev",
+      "sha": "171aba3a9831094489d398401141b0c3cd137b94"
+    },
+    {
+      "id": "AGENTS",
+      "category": "agent",
+      "source": "microsoft/playwright-cli",
+      "branch": "main",
+      "targetPath": "AGENTS.md",
+      "sha": "7a7c152963f960af06a91161960212cd69a8be9e"
+    },
+    {
+      "id": "playwright-cli",
+      "category": "skill",
+      "source": "microsoft/playwright-cli",
+      "branch": "main",
+      "targetPath": ".github/skills/playwright-cli",
+      "sha": "cc70f6e5f0cf42b82d3f72f6f1c3a4134694d518"
+    },
+    {
+      "id": "antislop",
+      "category": "skill",
+      "source": "miqdadbadjuber/anti-slop",
+      "branch": "main",
+      "targetPath": ".github/skills/antislop",
+      "sha": "851e04b2f79c362260b6934adeb8ab0d75e61525"
+    },
+    {
+      "id": "antislop-code",
+      "category": "skill",
+      "source": "miqdadbadjuber/anti-slop",
+      "branch": "main",
+      "targetPath": ".github/skills/antislop-code",
+      "sha": "17976b03ca7f88e09ed11ef4b796461f46758156"
+    },
+    {
+      "id": "antislop-copywriting",
+      "category": "skill",
+      "source": "miqdadbadjuber/anti-slop",
+      "branch": "main",
+      "targetPath": ".github/skills/antislop-copywriting",
+      "sha": "d9cee8bff4e0b36b9dbef7d8230069d99d0a58c4"
+    },
+    {
+      "id": "antislop-layoutmobile",
+      "category": "skill",
+      "source": "miqdadbadjuber/anti-slop",
+      "branch": "main",
+      "targetPath": ".github/skills/antislop-layoutmobile",
+      "sha": "651391535f3c3c59c673456635259d9531d663d4"
+    },
+    {
+      "id": "antislop-human",
+      "category": "skill",
+      "source": "miqdadbadjuber/anti-slop",
+      "branch": "main",
+      "targetPath": ".github/skills/antislop-human",
+      "sha": "dbd32e9bffb0a8b097de60f710e7722bb5f3dc02"
+    },
+    {
+      "id": "antislop-ui",
+      "category": "skill",
+      "source": "miqdadbadjuber/anti-slop",
+      "branch": "main",
+      "targetPath": ".github/skills/antislop-ui",
+      "sha": "0c979fd4544c96444a8d70960dab7beecb0f63d9"
+    },
+    {
+      "id": "brand",
+      "category": "skill",
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "branch": "main",
+      "targetPath": ".claude/skills/brand",
+      "sha": "587f291030a68a213b4aa1936dc4be8cb25adbc8"
+    },
+    {
+      "id": "design",
+      "category": "skill",
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "branch": "main",
+      "targetPath": ".claude/skills/design",
+      "sha": "2129754d4424bc8fb26f5a6b5ecf9969208e907f"
+    },
+    {
+      "id": "design-system",
+      "category": "skill",
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "branch": "main",
+      "targetPath": ".claude/skills/design-system",
+      "sha": "7e87cf933457bb27fdfc818e2de69dede4eddd2c"
+    },
+    {
+      "id": "ui-ux-pro-max",
+      "category": "skill",
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "branch": "main",
+      "targetPath": ".claude/skills/ui-ux-pro-max",
+      "sha": "d69b734e576aa6b430bc11a435aa11d29bc92c8e"
+    },
+    {
+      "id": "ui-styling",
+      "category": "skill",
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "branch": "main",
+      "targetPath": ".claude/skills/ui-styling",
+      "sha": "2279643473f0c0a0f8d791a5b2b02bf9804d3167"
+    },
+    {
+      "id": "taste-skill",
+      "category": "skill",
+      "source": "Leonxlnx/taste-skill",
+      "branch": "main",
+      "targetPath": ".github/skills/taste-skill",
+      "sha": "90f92ba7a3ce514cf85a2809583712dbd14106ea"
+    }
+  ],
+  "updatedAt": "2026-11-14T10:48:00.015Z"
+}
