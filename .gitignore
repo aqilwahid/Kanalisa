@@ -28,3 +28,5 @@ tmp/
 .claude/
 PRD-*.md
 AGENTS.md
+.github/skills/
+.github/installed-ai-capabilities.json
