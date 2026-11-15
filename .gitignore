@@ -23,3 +23,8 @@ backend/src/utils/test.js
 *.cert
 .cache/
 tmp/
+
+# Claude AI & Local Development
+.claude/
+PRD-*.md
+AGENTS.md
