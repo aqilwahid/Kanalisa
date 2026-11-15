@@ -1,3 +1,15 @@
+// Mock data keyword deterministik untuk testing tanpa YouTube Search API
+// Menghilangkan Math.random() agar hasil pencarian konsisten & dapat diuji ulang.
+
+function hashString(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
 const MOCK_KEYWORD_DATA = {
   'ayam geprek': {
     query: 'ayam geprek',
@@ -96,83 +108,87 @@ const MOCK_KEYWORD_DATA = {
   },
 };
 
-function calculateOpportunityScore(volume, competition) {
-  return Math.round((volume * (100 - competition)) / 100);
+export function calculateOpportunityScore(volume, competition) {
+  const v = Math.min(100, Math.max(0, Number(volume) || 0));
+  const c = Math.min(100, Math.max(0, Number(competition) || 0));
+  return Math.round((v * (100 - c)) / 100);
 }
 
-function getOpportunityLabel(score) {
+export function getOpportunityLabel(score) {
   if (score >= 70) return 'Peluang Tinggi';
   if (score >= 40) return 'Sedang';
   return 'Rendah';
 }
 
-function generateMockKeywords(query) {
-  const lowerQuery = query.toLowerCase().trim();
-  
+export function generateMockKeywords(query) {
+  const lowerQuery = String(query || '').toLowerCase().trim();
+
   for (const [key, data] of Object.entries(MOCK_KEYWORD_DATA)) {
-    if (lowerQuery.includes(key) || key.includes(lowerQuery)) {
+    if (lowerQuery === key || (lowerQuery.length > 3 && (lowerQuery.includes(key) || key.includes(lowerQuery)))) {
       return {
         ...data,
         query,
+        isMock: true,
+        source: 'mock',
         searchedAt: new Date().toISOString(),
       };
     }
   }
-  
-  const volume = Math.floor(Math.random() * 30) + 50;
-  const competition = Math.floor(Math.random() * 40) + 40;
+
+  // Hashing deterministik berbasis string kata kunci
+  const seed = hashString(lowerQuery);
+  const volume = 40 + (seed % 50); // 40..89
+  const competition = 30 + ((seed >> 2) % 55); // 30..84
   const score = calculateOpportunityScore(volume, competition);
-  
+
   const baseKeywords = [
-    `cara ${query}`,
-    `tutorial ${query}`,
-    `${query} pemula`,
-    `${query} terbaru`,
-    `${query} 2024`,
-    `${query} mudah`,
-    `${query} gratis`,
-    `${query} hp`,
-    `${query} android`,
-    `ng${query}`,
+    `cara ${lowerQuery}`,
+    `tutorial ${lowerQuery}`,
+    `${lowerQuery} pemula`,
+    `${lowerQuery} terbaru`,
+    `${lowerQuery} lengkap`,
+    `${lowerQuery} mudah`,
+    `${lowerQuery} di hp`,
+    `tips ${lowerQuery}`,
+    `belajar ${lowerQuery}`,
+    `rekomendasi ${lowerQuery}`,
   ];
-  
+
   return {
     query,
     volumeRelative: volume,
-    competition: competition,
+    competition,
     opportunityScore: score,
     label: getOpportunityLabel(score),
-    relatedKeywords: baseKeywords.slice(0, 10).map((kw, i) => ({
-      keyword: kw,
-      volumeRelative: Math.max(30, volume - i * 5),
-      competition: Math.max(20, competition - i * 3),
-      opportunityScore: calculateOpportunityScore(Math.max(30, volume - i * 5), Math.max(20, competition - i * 3)),
-      label: getOpportunityLabel(calculateOpportunityScore(Math.max(30, volume - i * 5), Math.max(20, competition - i * 3))),
-    })),
+    isMock: true,
+    source: 'mock',
+    relatedKeywords: baseKeywords.map((kw, i) => {
+      const kwSeed = hashString(kw);
+      const kwVol = Math.max(25, volume - 5 - (kwSeed % 15));
+      const kwComp = Math.max(20, competition - (i % 2 === 0 ? 10 : -5));
+      const kwScore = calculateOpportunityScore(kwVol, kwComp);
+      return {
+        keyword: kw,
+        volumeRelative: kwVol,
+        competition: kwComp,
+        opportunityScore: kwScore,
+        label: getOpportunityLabel(kwScore),
+      };
+    }),
     searchedAt: new Date().toISOString(),
   };
 }
 
 export async function searchKeywords(query) {
-  console.log(`[MOCK] searchKeywords called for query: "${query}"`);
-  
-  await new Promise(resolve => setTimeout(resolve, 100));
-  
   return generateMockKeywords(query);
 }
 
 export async function getRelatedKeywords(query) {
-  console.log(`[MOCK] getRelatedKeywords called for query: "${query}"`);
-  
-  await new Promise(resolve => setTimeout(resolve, 50));
-  
   const result = generateMockKeywords(query);
   return result.relatedKeywords;
 }
 
 export async function getSavedKeywords(userId) {
-  console.log(`[MOCK] getSavedKeywords called for userId: ${userId}`);
-  
   return [
     'ayam geprek sambal matah',
     'capcut template gratis',
@@ -181,13 +197,9 @@ export async function getSavedKeywords(userId) {
 }
 
 export async function saveKeyword(userId, keyword) {
-  console.log(`[MOCK] saveKeyword called for userId: ${userId}, keyword: ${keyword}`);
-  
   return { success: true, keyword };
 }
 
 export async function deleteSavedKeyword(userId, keyword) {
-  console.log(`[MOCK] deleteSavedKeyword called for userId: ${userId}, keyword: ${keyword}`);
-  
   return { success: true };
 }

@@ -9,10 +9,11 @@
     });
   }
 
-  function setState(key) {
+  function setState(message, isError = false) {
     const state = $('state');
-    state.textContent = key ? text(key) : '';
-    state.setAttribute('role', key === 'authFailed' || key === 'fetchVideoError' ? 'alert' : 'status');
+    state.textContent = message || '';
+    state.setAttribute('role', isError ? 'alert' : 'status');
+    state.style.color = isError ? 'var(--k-bad, #c00)' : 'var(--k-muted, #666)';
   }
 
   function render(user, credits) {
@@ -25,39 +26,74 @@
   }
 
   async function loadAccount() {
-    if (!(await K.getToken())) return render(null);
-    setState('loading');
+    const token = await K.getToken();
+    if (!token) return render(null);
+
+    setState(text('loading'));
     try {
-      const [{ user }, credits] = await Promise.all([K.apiRequest('/api/auth/me'), K.apiRequest('/api/ai/credits')]);
+      const [{ user }, credits] = await Promise.all([
+        K.apiRequest('/api/auth/me'),
+        K.apiRequest('/api/ai/credits'),
+      ]);
       const { keywordQuotaUsed = 0 } = await chrome.storage.sync.get('keywordQuotaUsed');
       render({ ...user, keywordQuotaUsed }, credits);
       setState('');
-    } catch (_) {
+    } catch (err) {
+      console.warn('[Kanalisa] loadAccount failed:', err.message);
       render(null);
-      setState(await K.getToken() ? 'fetchVideoError' : '');
+      setState(err.status === 0 ? 'Backend tidak aktif (http://localhost:3000)' : text('fetchVideoError'), true);
     }
   }
 
   async function signIn() {
-    const { googleClientId } = await chrome.storage.sync.get({ googleClientId: '' });
-    if (!googleClientId) {
-      // dev: backend mode mock menerima credential apa pun
-      const { token } = await K.apiRequest('/api/auth/google', { method: 'POST', auth: false, body: { credential: 'dev-mock' } });
+    // Cek konfigurasi auth dari backend terlebih dahulu
+    let serverClientId = '';
+    let isMockMode = false;
+    try {
+      const configRes = await K.apiRequest('/api/auth/config', { auth: false });
+      serverClientId = configRes?.googleClientId || '';
+      isMockMode = configRes?.authMode === 'mock';
+    } catch (_) {
+      // Jika backend tidak bisa diakses, tetap biarkan error tertangani di luar
+    }
+
+    const { googleClientId: storedClientId = '' } = await chrome.storage.sync.get('googleClientId');
+    const clientId = storedClientId || serverClientId;
+
+    if (isMockMode || !clientId) {
+      // Mode development/mock: login otomatis menggunakan akun uji coba
+      const { token } = await K.apiRequest('/api/auth/google', {
+        method: 'POST',
+        auth: false,
+        body: { credential: 'dev-mock' },
+      });
       return K.setToken(token);
     }
+
+    // Mode live: Google OAuth flow via launchWebAuthFlow
     const redirectUri = chrome.identity.getRedirectURL();
     const params = new URLSearchParams({
-      client_id: googleClientId,
+      client_id: clientId,
       redirect_uri: redirectUri,
       response_type: 'code',
       scope: 'openid email profile',
       access_type: 'offline',
       prompt: 'select_account',
     });
-    const redirect = await chrome.identity.launchWebAuthFlow({ url: `https://accounts.google.com/o/oauth2/v2/auth?${params}`, interactive: true });
+
+    const redirect = await chrome.identity.launchWebAuthFlow({
+      url: `https://accounts.google.com/o/oauth2/v2/auth?${params}`,
+      interactive: true,
+    });
+
     const code = new URL(redirect).searchParams.get('code');
-    if (!code) throw new Error('no code');
-    const { token } = await K.apiRequest('/api/auth/google', { method: 'POST', auth: false, body: { code, credential: code, redirectUri } });
+    if (!code) throw new Error('Tidak ada kode autentikasi dari Google');
+
+    const { token } = await K.apiRequest('/api/auth/google', {
+      method: 'POST',
+      auth: false,
+      body: { code, redirectUri },
+    });
     await K.setToken(token);
   }
 
@@ -70,12 +106,15 @@
         render(null);
         setState('');
       } else {
-        setState('authenticating');
+        setState(text('authenticating'));
         await signIn();
         await loadAccount();
+        setState(text('loginSuccess'));
+        setTimeout(() => setState(''), 2000);
       }
-    } catch (_) {
-      setState('authFailed');
+    } catch (err) {
+      console.error('[Kanalisa] Login error:', err);
+      setState(err.message || text('authFailed'), true);
     } finally {
       button.disabled = false;
     }
@@ -89,7 +128,10 @@
     window.close();
   });
 
-  chrome.storage.sync.get({ theme: 'system' }).then(({ theme }) => { if (theme !== 'system') document.documentElement.dataset.theme = theme; });
+  chrome.storage.sync.get({ theme: 'system' }).then(({ theme }) => {
+    if (theme !== 'system') document.documentElement.dataset.theme = theme;
+  });
+
   localize();
   loadAccount();
 })();

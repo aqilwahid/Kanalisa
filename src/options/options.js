@@ -78,7 +78,13 @@
     event.preventDefault();
     const theme = $('theme').value;
     const googleClientId = $('googleClientId').value.trim();
+    const apiBaseUrl = $('apiBaseUrl').value.trim();
     await chrome.storage.sync.set({ videoPanelEnabled: $('videoPanelEnabled').checked, searchCardEnabled: $('searchCardEnabled').checked, theme, googleClientId });
+    if (apiBaseUrl) {
+      await chrome.storage.local.set({ apiBaseUrl });
+    } else {
+      await chrome.storage.local.remove('apiBaseUrl');
+    }
     applyTheme(theme);
     status('settingsSaved');
   });
@@ -101,6 +107,7 @@
 
   async function load() {
     const s = await chrome.storage.sync.get({ niche: '', timezone: 'Asia/Jakarta', languageStyle: 'casual', videoPanelEnabled: true, searchCardEnabled: true, theme: 'system', googleClientId: '' });
+    const local = await chrome.storage.local.get({ apiBaseUrl: '' });
     niche = s.niche;
     form.timezone.value = s.timezone;
     form.languageStyle.value = s.languageStyle;
@@ -108,6 +115,7 @@
     $('searchCardEnabled').checked = s.searchCardEnabled;
     $('theme').value = s.theme;
     $('googleClientId').value = s.googleClientId;
+    $('apiBaseUrl').value = local.apiBaseUrl || '';
     applyTheme(s.theme);
     renderNiches();
   }

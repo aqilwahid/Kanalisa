@@ -1,6 +1,8 @@
 import express from 'express';
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 import { config } from '../config.js';
+import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -14,48 +16,64 @@ const TIER_PLANS = {
   },
 };
 
+function safeCompare(a, b) {
+  if (!a || !b) return false;
+  const bufA = Buffer.from(String(a));
+  const bufB = Buffer.from(String(b));
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
+}
+
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   try {
     const signature = req.headers['x-webhook-signature'] || req.headers['x-midtrans-signature'];
     const payload = req.body.toString();
-    
-    const expectedSignature = crypto
-      .createHmac('sha256', config.PAYMENT_GATEWAY_WEBHOOK_SECRET)
-      .update(payload)
-      .digest('hex');
-    
-    if (signature !== expectedSignature) {
-      console.warn('Invalid webhook signature');
-      return res.status(401).json({ error: 'Invalid signature' });
+
+    if (!config.PAYMENT_GATEWAY_WEBHOOK_SECRET) {
+      if (config.NODE_ENV === 'production') {
+        return res.status(500).json({ error: 'Webhook secret belum dikonfigurasi' });
+      }
+      // Mode development tanpa secret
+    } else {
+      const expectedSignature = crypto
+        .createHmac('sha256', config.PAYMENT_GATEWAY_WEBHOOK_SECRET)
+        .update(payload)
+        .digest('hex');
+
+      if (!safeCompare(signature, expectedSignature)) {
+        return res.status(401).json({ error: 'Signature webhook tidak valid' });
+      }
     }
-    
-    const event = JSON.parse(payload);
-    
+
+    let event;
+    try {
+      event = JSON.parse(payload);
+    } catch {
+      return res.status(400).json({ error: 'Payload bukan JSON valid' });
+    }
+
+    const { user_id, plan, billing_cycle } = event.metadata || {};
+
     if (event.event_type === 'payment_success' || event.transaction_status === 'settlement') {
-      const { user_id, plan, billing_cycle } = event.metadata || {};
-      
       if (!user_id || !plan) {
-        console.warn('Missing metadata in webhook:', event);
-        return res.status(400).json({ error: 'Invalid metadata' });
+        return res.status(400).json({ error: 'Metadata user_id atau plan tidak lengkap' });
       }
-      
-      await req.db.updateUserTier(user_id, plan, billing_cycle);
-      
-      console.log(`User ${user_id} upgraded to ${plan} (${billing_cycle})`);
+
+      const userModel = req.userModel;
+      await userModel.updateTier(user_id, plan, billing_cycle);
     }
-    
+
     if (event.event_type === 'subscription_cancelled' || event.transaction_status === 'cancel') {
-      const { user_id } = event.metadata || {};
       if (user_id) {
-        await req.db.updateUserTier(user_id, 'free', null);
-        console.log(`User ${user_id} downgraded to free`);
+        const userModel = req.userModel;
+        await userModel.updateTier(user_id, 'free', null);
       }
     }
-    
+
     res.json({ received: true });
   } catch (err) {
     console.error('Billing webhook error:', err.message);
-    res.status(500).json({ error: 'Webhook processing failed' });
+    res.status(500).json({ error: 'Pemrosesan webhook gagal' });
   }
 });
 
@@ -66,10 +84,10 @@ router.get('/plans', (req, res) => {
         name: 'Gratis',
         price: 0,
         features: [
-          'Overlay video & skor dasar',
+          'Overlay video & Skor Kanalisa',
           'Tag video & checklist SEO',
-          '3 riset keyword/hari',
-          '50 kredit AI/bulan',
+          '3 riset kata kunci per hari',
+          '50 kredit AI per bulan',
         ],
       },
       pro: {
@@ -77,124 +95,90 @@ router.get('/plans', (req, res) => {
         monthly: TIER_PLANS.pro.monthly,
         yearly: TIER_PLANS.pro.yearly,
         features: [
-          'Semua fitur Gratis',
-          'Riset keyword tak terbatas',
-          'Rincian skor & outlier',
-          '10 kompetitor',
-          '1.500 kredit AI/bulan',
-          'Estimasi pendapatan Rupiah',
-          'Jam unggah optimal',
+          'Semua fitur paket Gratis',
+          'Riset kata kunci tak terbatas',
+          'Rincian Skor Kanalisa & analisis outlier',
+          '10 kanal kompetitor',
+          '1.500 kredit AI per bulan',
+          'Estimasi pendapatan Rupiah per kategori',
+          'Rekomendasi jam unggah optimal',
         ],
       },
       agency: {
         name: 'Agensi',
         monthly: TIER_PLANS.agency.monthly,
         features: [
-          'Semua fitur Pro',
-          'Hingga 10 kanal',
-          '50 kompetitor',
-          '6.000 kredit AI/bulan',
-          'Ekspor laporan CSV/PDF',
-          'Multi-user (akan datang)',
+          'Semua fitur paket Pro',
+          'Hingga 10 kanal YouTube',
+          '50 kanal kompetitor',
+          '6.000 kredit AI per bulan',
+          'Ekspor laporan analitik CSV/PDF',
         ],
       },
     },
   });
 });
 
-router.post('/create-checkout', async (req, res) => {
+router.post('/create-checkout', authMiddleware, async (req, res) => {
   try {
     const { plan, billingCycle = 'monthly' } = req.body;
-    
+
     if (!plan || !TIER_PLANS[plan]) {
-      return res.status(400).json({ error: 'Invalid plan' });
+      return res.status(400).json({ error: 'Paket langganan tidak valid' });
     }
-    
+
     const planData = TIER_PLANS[plan][billingCycle];
     if (!planData) {
-      return res.status(400).json({ error: 'Invalid billing cycle' });
+      return res.status(400).json({ error: 'Siklus tagihan tidak valid' });
     }
-    
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-    
-    const token = authHeader.slice(7);
-    const jwt = await import('jsonwebtoken');
-    const decoded = jwt.default.verify(token, config.JWT_SECRET);
-    
-    const orderId = `kanalisa-${plan}-${decoded.id}-${Date.now()}`;
-    
-    const checkoutData = {
+
+    const orderId = `kanalisa-${plan}-${req.user.id.slice(0, 8)}-${Date.now()}`;
+
+    res.json({
       orderId,
       amount: planData.price,
       currency: 'IDR',
-      customer: {
-        id: decoded.id,
-        email: decoded.email,
-        name: decoded.name,
-      },
-      metadata: {
-        user_id: decoded.id,
-        plan,
-        billing_cycle: billingCycle,
-      },
-      callbackUrl: `${config.FRONTEND_URL}/settings?payment=success`,
-    };
-    
-    res.json({ checkoutUrl: `/api/billing/pay/${orderId}`, orderId });
+      plan,
+      billingCycle,
+      checkoutUrl: `/api/billing/pay/${orderId}`,
+      message: 'Simulasi checkout berhasil dibuat. Integrasi payment gateway lokal (Midtrans/Xendit) siap disambungkan.',
+    });
   } catch (err) {
     console.error('Create checkout error:', err.message);
-    res.status(500).json({ error: 'Failed to create checkout' });
+    res.status(500).json({ error: 'Gagal membuat tagihan' });
   }
 });
 
-router.get('/subscription', async (req, res) => {
+router.get('/subscription', authMiddleware, async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-    
-    const token = authHeader.slice(7);
-    const jwt = await import('jsonwebtoken');
-    const decoded = jwt.default.verify(token, config.JWT_SECRET);
-    
-    const user = await req.db.getUserById(decoded.id);
+    const userModel = req.userModel;
+    const user = await userModel.getUserById(req.user.id);
+
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: 'Pengguna tidak ditemukan' });
     }
-    
+
     res.json({
-      tier: user.tier,
-      billingCycle: user.billingCycle,
-      currentPeriodEnd: user.currentPeriodEnd,
-      cancelAtPeriodEnd: user.cancelAtPeriodEnd,
+      tier: user.tier || 'free',
+      billingCycle: user.billing_cycle ?? user.billingCycle ?? null,
+      currentPeriodEnd: user.current_period_end ?? user.currentPeriodEnd ?? null,
+      cancelAtPeriodEnd: user.cancel_at_period_end ?? user.cancelAtPeriodEnd ?? false,
     });
   } catch (err) {
     console.error('Get subscription error:', err.message);
-    res.status(500).json({ error: 'Failed to fetch subscription' });
+    res.status(500).json({ error: 'Gagal memuat status langganan' });
   }
 });
 
-router.post('/cancel', async (req, res) => {
+router.post('/cancel', authMiddleware, async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-    
-    const token = authHeader.slice(7);
-    const jwt = await import('jsonwebtoken');
-    const decoded = jwt.default.verify(token, config.JWT_SECRET);
-    
-    await req.db.updateUserSubscription(decoded.id, { cancelAtPeriodEnd: true });
-    
-    res.json({ success: true, message: 'Subscription will cancel at period end' });
+    const userModel = req.userModel;
+    await userModel.updateSubscription(req.user.id, { cancelAtPeriodEnd: true });
+
+    res.json({ success: true, message: 'Langganan Anda akan dibatalkan pada akhir periode penagihan aktif.' });
   } catch (err) {
     console.error('Cancel subscription error:', err.message);
-    res.status(500).json({ error: 'Failed to cancel subscription' });
+    res.status(500).json({ error: 'Gagal membatalkan langganan' });
   }
 });
 

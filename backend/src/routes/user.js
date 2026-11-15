@@ -18,10 +18,10 @@ router.get('/me', authMiddleware, async (req, res) => {
         email: user.email,
         name: user.name,
         avatar: user.avatar,
-        tier: user.tier,
-        aiCredits: user.ai_credits,
-        keywordQuota: user.keyword_quota,
-        createdAt: user.created_at,
+        tier: user.tier || 'free',
+        aiCredits: user.ai_credits ?? user.aiCredits ?? 50,
+        keywordQuota: user.keyword_quota ?? user.keywordQuota ?? 3,
+        createdAt: user.created_at ?? user.createdAt,
       },
     });
   } catch (err) {

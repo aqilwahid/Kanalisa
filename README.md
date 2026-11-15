@@ -4,342 +4,233 @@
 
 ## 📌 Ringkasan
 
-**Kanalisa** adalah ekstensi Chrome (Manifest V3) yang memberikan insight analitik dan rekomendasi SEO langsung di halaman YouTube, dirancang khusus untuk kreator dan pengelola kanal YouTube Indonesia.
+**Kanalisa** adalah ekstensi Google Chrome (Manifest V3) yang memberikan wawasan analitik dan rekomendasi SEO langsung di halaman YouTube, dirancang khusus untuk kreator dan pengelola kanal YouTube Indonesia.
 
 ### ✨ Fitur Utama (MVP v1.0)
 
-- 📊 **Overlay Panel Video** — Skor Kanalisa (0-100), metrik video real-time (views, TPJ, likes, comments, engagement rate), analisis tag, checklist SEO
-- 🔍 **Riset Keyword** — Volume relatif, persaingan, skor peluang dengan label (Tinggi/Sedang/Rendah) di halaman hasil pencarian YouTube
-- 💡 **Saran AI** — Saran judul video dalam 4 gaya (formal, santai, clickbait-ringan, edukatif) berbahasa Indonesia natural
-- 🔐 **Login Google** — Autentikasi via Google OAuth, tier-based (Gratis/Pro)
-- 💳 **Paket Berlangganan** — Gratis (terbatas), Pro (unlimited) dengan opsi pembayaran QRIS/e-wallet Indonesia
-- 🌍 **Lokalisasi Penuh** — UI, saran AI, format angka/tanggal/mata uang dalam bahasa Indonesia sesuai zona waktu WIB/WITA/WIT
+- 📊 **Overlay Panel Video (`/watch`)** — Skor Kanalisa (0–100), metrik video (tayangan, TPJ rata-rata sejak publikasi, suka, komentar, tingkat interaksi, umur video), analisis tag dengan tombol salin, checklist SEO 7 butir, dan indikator video meledak (*outlier*).
+- 🔍 **Riset Kata Kunci (`/results`)** — Kartu analisis kata kunci di atas hasil pencarian YouTube: volume pencarian relatif, tingkat persaingan, skor peluang kata kunci, dan daftar kata kunci terkait.
+- 💡 **Rekomendasi AI** — Pembuatan ide judul video dalam 4 gaya bahasa Indonesia (Formal, Santai, Clickbait Ringan, Edukatif), rekomendasi deskripsi terstruktur dengan timestamp & hashtag, serta rekomendasi tag.
+- 🔐 **Autentikasi Pengguna** — Login menggunakan Google OAuth dengan dukungan *1-Click Mock Dev Login* untuk pengujian lokal instan tanpa konfigurasi Google Cloud Console.
+- 💳 **Paket & Batas Penggunaan** — Paket Gratis (3 riset kata kunci/hari, 50 kredit AI/bulan) dan Pro (kuota kata kunci tak terbatas, 1.500 kredit AI/bulan).
+- 🌍 **Lokalisasi Penuh** — Seluruh antarmuka, istilah analitik baku (TPJ, Tayangan, Interaksi), saran AI, dan format mata uang/tanggal diformat dalam Bahasa Indonesia (WIB/WITA/WIT).
 
 ---
 
-## 🏗️ Arsitektur
+## 🏗️ Struktur Proyek
 
 ```
 Kanalisa/
-├── src/                          (Chrome Extension - MV3)
-│   ├── manifest.json             (MV3 config, permissions, i18n)
-│   ├── background/               (Service Worker)
-│   │   └── service-worker.js     (Event listeners, alarm reset kuota)
-│   ├── content/                  (Content Scripts)
-│   │   ├── index.js              (SPA detection, routing)
-│   │   ├── adapter.js            (DOM selector abstraction layer)
+├── src/                          ← Folder Ekstensi Chrome (Folder untuk 'Load unpacked')
+│   ├── manifest.json             ← Manifest V3 (permissions, content scripts, background)
+│   ├── icons/                    ← Ikon ekstensi rasio 1:1 (16, 32, 48, 128 px)
+│   ├── background/
+│   │   └── service-worker.js     ← Background worker (komunikasi API & alarm reset kuota)
+│   ├── content/
+│   │   ├── index.js              ← Deteksi navigasi SPA YouTube & mounting
+│   │   ├── adapter.js            ← Abstraksi selector DOM YouTube & Shadow DOM
 │   │   └── pages/
-│   │       ├── watch.js          (Video page overlay panel)
-│   │       └── results.js        (Search results keyword card)
-│   ├── popup/                    (Extension popup)
-│   │   ├── popup.html
-│   │   ├── popup.js
-│   │   └── popup.css
-│   ├── options/                  (Settings & onboarding)
-│   │   ├── options.html
-│   │   ├── options.js
-│   │   └── options.css
-│   ├── utils/                    (Utilities)
-│   │   ├── api.js                (Backend API wrapper)
-│   │   ├── format.js             (Format angka, mata uang, tanggal Indonesia)
-│   │   ├── scoring.js            (Skor Kanalisa & Peluang Keyword formula)
-│   │   ├── cache.js              (chrome.storage wrapper dengan TTL)
-│   │   └── mock-data.js          (Mock data untuk testing)
-│   ├── styles/                   (CSS)
-│   │   ├── base.css
-│   │   ├── panel.css
-│   │   └── popup.css
-│   ├── _locales/                 (Lokalisasi i18n)
-│   │   ├── id/messages.json      (Bahasa Indonesia - 71 string)
-│   │   └── en/messages.json      (English fallback)
+│   │       ├── watch.js          ← Panel overlay analitik di halaman video
+│   │       └── results.js        ← Kartu riset kata kunci di halaman pencarian
+│   ├── popup/                    ← Jendela popup ekstensi di toolbar browser
+│   ├── options/                  ← Halaman onboarding & pengaturan preferensi
+│   ├── utils/
+│   │   ├── api.js                ← Klien API terpusat (deteksi otomatis dev/prod)
+│   │   ├── format.js             ← Format angka lokal (1,2 rb, 3,4 jt), Rp, tanggal
+│   │   ├── scoring.js            ← Formula Skor Kanalisa & Peluang Kata Kunci
+│   │   └── cache.js              ← Penyimpanan cache lokal dengan TTL
+│   └── _locales/
+│       ├── id/messages.json      ← Bahasa Indonesia (utama)
+│       └── en/messages.json      ← English fallback
 │
-├── backend/                      (Node.js + Express API)
+├── backend/                      ← API Server (Node.js + Express)
 │   ├── package.json
-│   ├── .env.example
+│   ├── .env.example              ← Contoh variabel environment
 │   ├── src/
-│   │   ├── index.js              (Express server)
-│   │   ├── config.js             (Env validation)
-│   │   ├── middleware/
-│   │   │   ├── auth.js           (JWT verification)
-│   │   │   └── rateLimit.js      (Per-tier rate limiting)
-│   │   ├── routes/
-│   │   │   ├── video.js          (GET /api/video/:id)
-│   │   │   ├── keyword.js        (GET /api/keyword/search)
-│   │   │   ├── ai.js             (POST /api/ai/suggest-*)
-│   │   │   ├── auth.js           (POST /api/auth/google)
-│   │   │   ├── billing.js        (POST /api/billing/webhook)
-│   │   │   └── user.js           (GET /api/user/me)
-│   │   ├── services/
-│   │   │   ├── youtube.js        (YouTube Data API v3 wrapper)
-│   │   │   ├── keyword.js        (Keyword scoring service)
-│   │   │   ├── ai.js             (LLM integration)
-│   │   │   ├── youtube-mock.js   (Mock YouTube API for testing)
-│   │   │   └── keyword-mock.js   (Mock keyword data for testing)
-│   │   ├── models/
-│   │   │   ├── user.js           (User schema & queries)
-│   │   │   └── keyword-cache.js  (Keyword cache schema)
-│   │   ├── utils/
-│   │   │   ├── cache.js          (Redis wrapper)
-│   │   │   ├── format.js         (Server-side formatting)
-│   │   │   └── quota.js          (YouTube API quota tracking)
-│   │   └── tests/
-│   │       ├── video.test.js
-│   │       ├── keyword.test.js
-│   │       └── scoring.test.js
+│   │   ├── index.js              ← Entry point server Express & konfigurasi CORS
+│   │   ├── config.js             ← Validasi environment Zod & status mode layanan
+│   │   ├── store.js              ← Abstraksi storage (In-memory dev & Redis/Postgres)
+│   │   ├── routes/               ← Endpoint API (video, keyword, ai, auth, billing, user)
+│   │   ├── services/             ← Logika bisnis (YouTube, Scoring, Keyword, AI)
+│   │   └── middleware/           ← Autentikasi JWT & pembatasan kuota
+│   └── tests/                    ← Pengujian otomatis (scoring, video, keyword, integrasi)
 │
-├── PRD-Kanalisa-Ekstensi-Chrome-YouTube.md  (Product Requirements Document)
-├── README.md                     (This file)
-├── AGENTS.md                     (Development workflow & coordination)
-└── .gitignore
+├── docs/
+│   └── LAPORAN-AUDIT.md          ← Laporan audit teknis & status kesiapan sistem
+├── PRD-Kanalisa-Ekstensi-Chrome-YouTube.md
+└── README.md
 ```
 
 ---
 
-## 🚀 Quick Start
+## 💻 Panduan Menjalankan di Windows (VS Code & Google Chrome)
 
-### Prerequisites
-- Node.js >= 20.0
-- npm >= 10.0
-- Chrome/Chromium browser
-- PostgreSQL 14+ (untuk production)
-- Redis (untuk production)
+Ikuti langkah-langkah di bawah ini untuk menjalankan dan menguji Kanalisa di komputer lokal Anda:
 
-### Setup Development
-
-#### 1. Backend API (Development)
-
-```bash
-cd backend
-npm install
-
-# Setup .env (copy dari .env.example)
-cp .env.example .env
-# Edit .env dengan credentials lokal
-
-# Jalankan dalam mode development (mock data)
-npm run dev
-# Server akan start di http://localhost:3000
-# Health check: curl http://localhost:3000/health
-```
-
-#### 2. Extension di Chrome (Development)
-
-1. **Buka Chrome** → ketik `chrome://extensions`
-2. **Toggle** "Developer mode" (kanan atas)
-3. **Click** "Load unpacked"
-4. **Select** folder `src/` dari project Kanalisa
-5. **Extension akan muncul** di toolbar Chrome
-
-#### 3. Testing
-
-- Buka halaman video YouTube (contoh: `youtube.com/watch?v=...`)
-- **Panel Kanalisa** akan muncul di samping kanan (daftar rekomendasi)
-- Lihat Skor Kanalisa, metrik, tag, checklist SEO dengan **mock data**
-- Buka halaman search YouTube → **kartu keyword** muncul di atas hasil
+### Prasyarat
+- **Node.js** versi 20.x atau lebih baru ([Download Node.js](https://nodejs.org/))
+- **Google Chrome** browser
+- **Visual Studio Code** (VS Code)
 
 ---
 
-## 📊 Metrik Skor
+### Langkah 1: Jalankan Backend API Server
 
-### Skor Kanalisa (0-100)
+Backend Kanalisa bertindak sebagai penyedia data analitik dan logika AI.
 
-| Komponen | Bobot | Definisi |
-|---|---|---|
-| **Kecepatan (VPH)** | 35% | Views per hour relatif terhadap median kanal |
-| **Engagement** | 25% | (Likes + Comments) / Views dibanding kategori |
-| **Kekuatan SEO** | 20% | Checklist: panjang judul, deskripsi, tag, link, timestamp, hashtag |
-| **Relevansi Keyword** | 20% | Cosine similarity judul vs tag + deskripsi |
-
-### Skor Peluang Keyword (0-100)
-
-```
-Peluang = Volume Relatif × (100 - Persaingan) / 100
-```
-
-- **Label:** `≥70 Tinggi` | `40-69 Sedang` | `<40 Rendah`
-- **Volume:** Google Trends (kategori YouTube Search, geo=ID) + internal data
-- **Persaingan:** Median views top 20 results + proporsi judul dengan keyword exact match
-
----
-
-## 🔧 API Endpoints (Backend)
-
-### Public Endpoints (Mock Data)
-
-```
-GET  /health                          → Server status
-GET  /api/video/:id                   → Video stats + Skor Kanalisa
-GET  /api/keyword/search?q=...        → Keyword opportunities
-GET  /api/keyword/related?q=...       → Related keywords
-```
-
-### Authenticated Endpoints (require JWT)
-
-```
-POST /api/auth/google                 → Login (Google OAuth)
-GET  /api/user/me                     → Current user profile
-POST /api/ai/suggest-title            → Saran judul (5 opsi, 4 gaya)
-POST /api/ai/suggest-description      → Saran deskripsi
-POST /api/ai/suggest-tags             → Saran tag
-```
-
----
-
-## 📱 Format Data Indonesia
-
-### Angka
-- `1200` → `1,2 rb`
-- `3400000` → `3,4 jt`
-- `125000000` → `125 jt`
-
-### Mata Uang
-- `49000` → `Rp49.000`
-- `399000` → `Rp399.000`
-
-### Tanggal (Zona WIB)
-- `2026-11-15T10:00:00Z` → `15 Nov 2026`
-
-### Istilah Baku (§17 PRD)
-- Views → **Tayangan**
-- Views per hour → **Tayangan per Jam (TPJ)**
-- Engagement rate → **Tingkat Interaksi**
-- Search volume → **Volume Pencarian (Relatif)**
-- Competition → **Persaingan**
-- Tags → **Tag**
-- Credits → **Kredit AI**
-
----
-
-## 🧪 Testing
-
-### Mock Data Mode (No Credentials)
-
-```bash
-# Backend sudah serve mock data dari services/youtube-mock.js
-npm run dev
-
-# Di extension, panel akan menampilkan:
-# - Video: "Cara membuat ayam geprek sambal matah yang enak"
-#   Views: 125.000, TPJ: 2.604, Skor: 64, Engagement: 6.4%
-# - Keyword: "ayam geprek" (Volume: 78, Persaingan: 64, Peluang: 28 - Rendah)
-```
-
-### Unit Tests
-
-```bash
-npm test                  # Jalankan semua test
-npm run test:watch       # Watch mode
-```
-
----
-
-## 🔐 Environment Variables
-
-### Backend (.env)
-
-```bash
-# Server
-PORT=3000
-NODE_ENV=development
-FRONTEND_URL=http://localhost:5173
-
-# JWT
-JWT_SECRET=your-secret-key-at-least-32-chars-long
-
-# Database (production only)
-DATABASE_URL=postgresql://user:pass@localhost:5432/kanalisa
-REDIS_URL=redis://localhost:6379
-
-# YouTube API (production)
-YOUTUBE_API_KEY=sk-...
-
-# Google OAuth (production)
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
-
-# LLM Provider (production)
-OPENAI_API_KEY=sk-...
-LLM_MODEL=gpt-4-turbo
-```
-
----
-
-## 🚢 Deployment
-
-### Development → Production
-
-1. **Setup Google Cloud Console**
-   - Create project
-   - Enable YouTube Data API v3
-   - Create OAuth 2.0 credentials (extension + web)
-   - Request API quota expansion (audit required)
-
-2. **Database Setup**
-   ```bash
-   # PostgreSQL
-   createdb kanalisa
-   psql kanalisa < backend/schema.sql
+1. Buka folder proyek **`Kanalisa`** di VS Code.
+2. Buka terminal terintegrasi di VS Code (`Ctrl + \`` atau menu **Terminal** → **New Terminal**).
+3. Jalankan perintah berikut:
+   ```powershell
+   cd backend
+   npm install
+   npm run dev
+   ```
+4. Pastikan terminal menampilkan pesan:
+   ```
+   🚀 Kanalisa API running on http://localhost:3000
+      Environment: development
+      Modes: YouTube=mock, Auth=mock, AI=mock, DB=memory, Cache=memory
    ```
 
-3. **Deploy Backend**
-   - Cloud Run, Heroku, atau self-hosted
-   - Set production environment variables
-   - Setup Redis (cache)
-   - Configure LLM provider credentials
+> 💡 **Apakah perlu menjalankan dev server untuk frontend?**  
+> **TIDAK PERLU.** Frontend Kanalisa adalah Ekstensi Chrome statis Manifest V3 di dalam folder `src/`. Ekstensi dimuat langsung ke browser tanpa perlu `npm run dev` atau bundler frontend. Hanya backend yang perlu dijalankan.
 
-4. **Submit Chrome Web Store**
-   - Upload extension (src/)
-   - Add screenshots, description
-   - Request 1-2 weeks untuk review
+> 💡 **Bagaimana cara mengaktifkan Mode Mock?**  
+> **Mode Mock aktif secara otomatis.** Jika file `.env` tidak diisi dengan API key (atau tidak ada file `.env`), backend langsung beroperasi menggunakan data tiruan (*mock*) deterministik dan penyimpanan in-memory. Anda tidak perlu membuat akun Google Cloud Console, Redis, atau PostgreSQL untuk pengujian lokal.
 
 ---
 
-## 📝 Glosarium
+### Langkah 2: Pasang Ekstensi di Google Chrome
 
-| English | Kanalisa | Catatan |
-|---|---|---|
-| Views | Tayangan | |
-| Views per hour (VPH) | Tayangan per Jam (TPJ) | "Kecepatan video mendapat tayangan saat ini" |
-| Subscribers | Subscriber | Dipertahankan (lebih dikenal) |
-| Engagement rate | Tingkat Interaksi | |
-| Keyword | Kata kunci | |
-| Search volume | Volume Pencarian (Relatif) | **Selalu dengan label "relatif"** |
-| Competition | Persaingan | |
-| Outlier | Video Meledak | Label: "3,2× rata-rata kanal" |
-| Tags | Tag | |
-| Credits | Kredit AI | Per saran = 1 kredit |
-
----
-
-## 📊 Development Status
-
-| Fase | Status | Fitur |
-|---|---|---|
-| **v1.0 (MVP)** | ✅ Complete | Overlay video, riset keyword, saran AI, login Google, paket Gratis/Pro |
-| **v1.1** | 🔄 Planned | Studio integration, audit kanal, jam unggah optimal, pelacak kompetitor |
-| **v2.0** | 📋 Backlog | Multi-kanal/agensi, ekspor PDF, saran thumbnail, bahasa Inggris, Edge support |
+1. Buka browser **Google Chrome**.
+2. Buka halaman ekstensi dengan mengetikkan:
+   ```
+   chrome://extensions/
+   ```
+3. Aktifkan **Developer mode** melalui tombol sakelar di pojok kanan atas.
+4. Klik tombol **Load unpacked** di pojok kiri atas.
+5. Pada jendela pemilihan folder, arahkan ke folder proyek Kanalisa dan pilih folder:
+   ```
+   C:\Users\<Username>\...\Kanalisa\src
+   ```
+   *(PENTING: Pilih folder **`src`**, BUKAN root folder `Kanalisa` dan bukan folder `backend`)*.
+6. Ekstensi **Kanalisa** akan muncul di daftar ekstensi dengan logo persegi biru-navy resmi.
+7. Sematkan (*pin*) ikon Kanalisa di toolbar Chrome agar mudah diakses.
 
 ---
 
-## 🤝 Contributing
+### Langkah 3: Verifikasi dan Pengujian Fitur
 
-Workflow development menggunakan 2 parallel agents (Agen 1: Frontend Extension, Agen 2: Backend API). Lihat [AGENTS.md](./AGENTS.md) untuk detail koordinasi.
+#### A. Uji Coba Overlay Video (`/watch`)
+1. Buka video YouTube apa saja di Chrome (contoh: `https://www.youtube.com/watch?v=dQw4w9WgXcQ` atau video lainnya).
+2. Perhatikan kolom samping kanan (di atas daftar video rekomendasi):
+   - **Panel Kanalisa** akan muncul dengan status memuat lalu menampilkan data analitik.
+   - Periksa metrik: **Skor Kanalisa** (0–100), **Tayangan per Jam (TPJ)**, **Tayangan**, **Suka**, **Komentar**, **Tingkat Interaksi**, dan **Umur Video**.
+   - Klik tab **Tag**: periksa daftar tag dan coba tombol **Salin semua**.
+   - Klik tab **SEO**: periksa checklist optimasi metadata (panjang judul, deskripsi, hashtag, timestamp, tautan).
+   - Klik tombol **−** di header panel untuk menguji fitur ciutkan (*collapse*).
+
+#### B. Uji Coba Riset Kata Kunci Pencarian (`/results`)
+1. Lakukan pencarian di YouTube, misalnya ketik: `ayam geprek` atau `capcut`.
+2. Di bagian paling atas hasil pencarian, **Kartu Riset Kata Kunci** Kanalisa akan muncul.
+3. Periksa informasi:
+   - Volume Pencarian Relatif (0–100)
+   - Tingkat Persaingan (0–100)
+   - Skor Peluang Kata Kunci (dengan lencana: Peluang Tinggi / Sedang / Rendah)
+   - Chip kata kunci terkait (klik salah satu chip untuk langsung mencari kata kunci tersebut).
+
+#### C. Uji Coba Popup & Login Mock
+1. Klik ikon ekstensi **Kanalisa** di toolbar Chrome.
+2. Jendela popup akan terbuka:
+   - Status awal: "Belum masuk".
+   - Klik tombol **"Masuk dengan Google"**.
+   - Dalam mode development/mock, login langsung berhasil secara instan dan status berubah menjadi: `"Terkoneksi sebagai test@example.com"`.
+   - Informasi sisa Kredit AI (50) dan Kuota Kata Kunci (3) akan tampil.
+3. Coba ketik kata kunci pada form pencarian di popup lalu tekan Enter → tab pencarian YouTube akan otomatis terbuka.
+
+#### D. Uji Coba Halaman Pengaturan & Onboarding
+1. Pada popup, klik tombol **"Buka pengaturan"** (atau klik kanan ikon ekstensi → **Options**).
+2. Tab **Siapkan Kanalisa** akan terbuka:
+   - Langkah 1: Pilih niche kanal (Kuliner, Teknologi, Gaming, dll.).
+   - Langkah 2: Pilih zona waktu (WIB/WITA/WIT) dan gaya bahasa AI (Santai, Formal, Clickbait Ringan, Edukatif).
+   - Langkah 3: Tinjau dan simpan.
+3. Tab **Pengaturan**:
+   - Anda dapat mengaktifkan/menonaktifkan panel video atau kartu pencarian.
+   - Pilihan tema: Ikuti Sistem, Terang, Gelap.
+   - Konfigurasi URL server backend (otomatis `http://localhost:3000`).
 
 ---
 
-## 📄 Lisensi
+### Langkah 4: Cara Memeriksa Log & Menangani Error
 
-Internal project DPPP-RND. Dokumentasi & code © 2026.
+Jika terjadi kendala saat pengujian:
+
+1. **Memeriksa Backend:**
+   - Lihat output di terminal VS Code tempat `npm run dev` berjalan.
+   - Pastikan endpoint health check merespon dengan benar:
+     ```powershell
+     curl.exe http://localhost:3000/health
+     ```
+2. **Memeriksa Service Worker Ekstensi:**
+   - Buka `chrome://extensions/`.
+   - Pada kartu ekstensi Kanalisa, klik tautan bertuliskan **"service worker"** (berwarna biru).
+   - Console DevTools untuk background script akan terbuka untuk memeriksa network request dan log perpesanan.
+3. **Memeriksa Content Script (Halaman YouTube):**
+   - Pada halaman YouTube tempat panel muncul, tekan tombol **F12** atau klik kanan → **Inspect**.
+   - Buka tab **Console** dan filter dengan kata kunci `Kanalisa` untuk melihat log rendering.
+4. **Memperbarui Ekstensi Setelah Mengubah Kode:**
+   - Jika Anda mengubah kode di folder `src/`, buka `chrome://extensions/` lalu klik ikon panah melingkar (**Reload**) pada kartu Kanalisa.
 
 ---
 
-## 📧 Support & Kontak
+## 🧪 Pengujian Otomatis (Automated Testing)
 
-- **Email:** support@kanalisa.id (nanti)
-- **Docs:** [PRD lengkap](./PRD-Kanalisa-Ekstensi-Chrome-YouTube.md)
-- **Issues:** GitHub Issues
+Repositori dilengkapi dengan pengujian unit dan pengujian integrasi otomatis:
+
+```powershell
+# Jalankan seluruh test suite backend (64 tes)
+cd backend
+npm test
+
+# Jalankan self-check logika format & scoring ekstensi
+cd ../src
+node utils/self-check.js
+```
 
 ---
 
-**Last Updated:** 15 November 2026  
-**Versi:** 1.0 MVP (Pre-release)
+## 🔐 Konfigurasi Environment (Production / Live API)
+
+Untuk beralih dari mode mock ke mode data asli, buat file `.env` di folder `backend/` dan isi kredensial berikut:
+
+```env
+PORT=3000
+NODE_ENV=development
+
+# Kredensial YouTube Data API v3 (Google Cloud Console)
+YOUTUBE_API_KEY=AIzaSy...
+
+# Google OAuth 2.0 (Web Application)
+GOOGLE_CLIENT_ID=...apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=GOCSPX-...
+
+# Secret Token JWT (minimal 32 karakter)
+JWT_SECRET=rahasia-jwt-produksi-minimal-32-karakter-panjangnya
+
+# Database & Cache (Production)
+DATABASE_URL=postgresql://user:password@localhost:5432/kanalisa
+REDIS_URL=redis://localhost:6379
+
+# Kredensial OpenAI / LLM Provider
+LLM_API_KEY=sk-...
+LLM_MODEL=gpt-4o-mini
+```
+
+---
+
+## 📄 Dokumentasi Terkait
+
+- [Laporan Audit Teknis & Status Kesiapan](./docs/LAPORAN-AUDIT.md)
+- [Product Requirements Document (PRD)](./PRD-Kanalisa-Ekstensi-Chrome-YouTube.md)
+- [Workflow & Aturan Pengembangan](./AGENTS.md)

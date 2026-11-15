@@ -54,11 +54,17 @@
 
     <section id="settings-panel" role="tabpanel" aria-labelledby="settings-tab" hidden>
       <form id="settings-form" class="k-stack">
+        <fieldset><legend>Konfigurasi Backend API</legend>
+          <label class="k-label" for="apiBaseUrl"><span>URL Server Backend</span>
+            <input class="k-field" id="apiBaseUrl" type="url" placeholder="http://localhost:3000">
+          </label>
+          <p style="font-size: 0.85em; color: var(--k-muted); margin-top: 0.5em;">Kosongkan untuk otomatis (mode dev: http://localhost:3000, Web Store: https://api.kanalisa.id).</p>
+        </fieldset>
         <fieldset><legend>Google OAuth Setup</legend>
           <label class="k-label" for="googleClientId"><span>Google Client ID</span>
-            <input class="k-field" id="googleClientId" type="text" placeholder="Your Web Application Client ID from Google Cloud Console">
+            <input class="k-field" id="googleClientId" type="text" placeholder="Otomatis diambil dari server (atau isi manual)">
           </label>
-          <p style="font-size: 0.85em; color: #666; margin-top: 0.5em;">Get it from: <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console</a> → OAuth 2.0 Client IDs (Web application)</p>
+          <p style="font-size: 0.85em; color: var(--k-muted); margin-top: 0.5em;">Dalam mode development/mock, login berfungsi langsung tanpa Client ID.</p>
         </fieldset>
         <fieldset><legend data-i18n="panelSettingsHeading"></legend>
           <label class="k-toggle"><input type="checkbox" id="videoPanelEnabled"><span data-i18n="featureVideoPanel"></span></label>

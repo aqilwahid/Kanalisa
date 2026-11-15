@@ -23,6 +23,12 @@ function memoryKv() {
   return {
     async get(key) { return live(key)?.value ?? null; },
     async set(key, value, ttlSeconds) { data.set(key, { value: String(value), expiresAt: ttlSeconds ? Date.now() + ttlSeconds * 1000 : undefined }); },
+    async incr(key) {
+      const entry = live(key);
+      const value = Number(entry?.value || 0) + 1;
+      data.set(key, { value: String(value), expiresAt: entry?.expiresAt });
+      return value;
+    },
     async incrby(key, amount) {
       const entry = live(key);
       const value = Number(entry?.value || 0) + amount;
@@ -41,6 +47,7 @@ function redisKv(redis) {
   return {
     get: (key) => redis.get(key),
     set: (key, value, ttlSeconds) => (ttlSeconds ? redis.set(key, value, 'EX', ttlSeconds) : redis.set(key, value)),
+    incr: (key) => redis.incr(key),
     incrby: (key, amount) => redis.incrby(key, amount),
     expire: (key, ttlSeconds) => redis.expire(key, ttlSeconds),
     sadd: (key, member) => redis.sadd(key, member),

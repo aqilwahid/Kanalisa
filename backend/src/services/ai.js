@@ -1,91 +1,125 @@
-import { config } from '../config.js';
+import { config, modes } from '../config.js';
 
-const USE_MOCK = config.LLM_API_KEY === 'test-llm-key' || !config.LLM_API_KEY;
+export const isMockMode = modes.ai === 'mock';
+
+export function normalizeStyle(style) {
+  const map = {
+    formal: 'formal',
+    casual: 'santai',
+    santai: 'santai',
+    lightClickbait: 'clickbait-ringan',
+    'clickbait-ringan': 'clickbait-ringan',
+    educational: 'edukatif',
+    edukatif: 'edukatif',
+  };
+  return map[style] || 'santai';
+}
 
 function mockSuggestTitles({ topic, niche, style = 'santai', count = 5 }) {
+  const normalizedStyle = normalizeStyle(style);
+  const cleanTopic = String(topic || 'Konten').trim();
+  const capitalizedTopic = cleanTopic.charAt(0).toUpperCase() + cleanTopic.slice(1);
+
   const templates = {
     formal: [
-      `Cara ${topic.charAt(0).toUpperCase() + topic.slice(1)}: Panduan Lengkap`,
-      `Tutorial ${topic} untuk Pemula: Langkah demi Langkah`,
-      `Analisis ${topic}: Strategi Terbaik untuk ${niche}`,
-      `Panduan ${topic} Profesional: Tips & Trik`,
-      `${topic.charAt(0).toUpperCase() + topic.slice(1)}: Metode Terbukti Efektif`,
+      `Panduan Lengkap ${capitalizedTopic}: Strategi Efektif untuk ${niche}`,
+      `Tutorial ${capitalizedTopic} untuk Pemula: Langkah demi Langkah`,
+      `Analisis Mendalam ${capitalizedTopic}: Wajib Diketahui Kreator`,
+      `${capitalizedTopic}: Metode Terbukti Berhasil di 2026`,
+      `Strategi Optimasi ${capitalizedTopic} Secara Profesional`,
     ],
     santai: [
-      `Gimana Caranya ${topic}? Nih Tutorialnya!`,
-      `${topic.charAt(0).toUpperCase() + topic.slice(1)} Gampang Banget, Coba Deh`,
-      `Rahasia ${topic} yang Jarang Dibahas`,
-      `Yuk Belajar ${topic} Bareng Sama Gue`,
-      `${topic.charAt(0).toUpperCase() + topic.slice(1)}: Tips Buat Pemula`,
+      `Gimana Caranya ${capitalizedTopic}? Nih Tutorial Paling Gampang!`,
+      `${capitalizedTopic} Gampang Banget, Coba Deh Trik Ini`,
+      `Rahasia ${capitalizedTopic} yang Jarang Dibongkar Orang`,
+      `Yuk Belajar ${capitalizedTopic} Bareng Sampai Mahir`,
+      `${capitalizedTopic}: 5 Tips Praktis Buat Pemula`,
     ],
     'clickbait-ringan': [
-      `5 Cara ${topic} Cuma 5 Menit!`,
-      `${topic.charAt(0).toUpperCase() + topic.slice(1)}: Jangan Sampai Ketinggalan!`,
-      `Rahasia ${topic} yang Bikin Kamu Terkejut`,
-      `${topic.charAt(0).toUpperCase() + topic.slice(1)}: 3 Trik Rahasia Pro`,
-      `Ini Dia Cara ${topic} Paling Ampuh!`,
+      `5 Trik ${capitalizedTopic} yang Bikin Tayangan Meledak!`,
+      `Jangan Coba ${capitalizedTopic} Sebelum Tahu 3 Hal Ini!`,
+      `Rahasia ${capitalizedTopic} yang Bakal Bikin Kamu Kaget!`,
+      `${capitalizedTopic} Cuma 5 Menit: Hasilnya Bikin Geleng-geleng!`,
+      `Ini Dia Rahasia Pro ${capitalizedTopic} yang Jarang Dipakai!`,
     ],
     edukatif: [
-      `Belajar ${topic} dari Nol: Modul 1`,
-      `Dasar-dasar ${topic} untuk Pemula`,
-      `Step-by-Step ${topic}: Panduan Praktis`,
-      `Konsep ${topic} yang Wajib Kamu Pahami`,
-      `Latihan ${topic}: Dari Teori ke Praktik`,
+      `Belajar ${capitalizedTopic} dari Nol: Konsep & Praktik`,
+      `Dasar-dasar ${capitalizedTopic} yang Wajib Dipahami`,
+      `Langkah demi Langkah Menguasai ${capitalizedTopic}`,
+      `Bedah Tuntas ${capitalizedTopic}: Dari Teori ke Eksekusi`,
+      `Modul Praktis ${capitalizedTopic} untuk Pemula`,
     ],
   };
-  
-  const styleTemplates = templates[style] || templates.santai;
-  return styleTemplates.slice(0, count);
+
+  const list = templates[normalizedStyle] || templates.santai;
+  return list.slice(0, Math.min(count, list.length));
 }
 
 function mockSuggestDescription({ title, topic, niche, style = 'santai', includeTimestamps = true, includeHashtags = true, includeLinks = true }) {
-  let desc = `Video ini membahas ${topic} secara mendalam untuk niche ${niche}.\n\n`;
-  desc += `Dalam video ini, kamu akan belajar:\n`;
-  desc += `- Cara memulai ${topic}\n`;
-  desc += `- Tips dan trik yang efektif\n`;
-  desc += `- Kesalahan yang harus dihindari\n\n`;
-  
+  const cleanTopic = String(topic || 'konten');
+  let desc = `Video ini membahas panduan lengkap ${cleanTopic} untuk niche ${niche}.\n\n`;
+  desc += `Dalam video ini, kita akan membahas:\n`;
+  desc += `- Cara memulai ${cleanTopic} dari nol\n`;
+  desc += `- Tips dan trik penting yang terbukti berhasil\n`;
+  desc += `- Kesalahan umum yang harus dihindari\n\n`;
+
   if (includeTimestamps) {
-    desc += `⏱ TIMESTAMP:\n`;
-    desc += `0:00 - Intro\n`;
-    desc += `1:30 - Persiapan\n`;
-    desc += `3:00 - Tutorial Utama\n`;
-    desc += `8:00 - Tips Tambahan\n`;
-    desc += `10:00 - Penutup\n\n`;
+    desc += `⏱ DAFTAR ISI:\n`;
+    desc += `00:00 - Pembuka\n`;
+    desc += `01:30 - Persiapan & Alat\n`;
+    desc += `03:45 - Langkah Utama\n`;
+    desc += `07:15 - Tips Praktis\n`;
+    desc += `09:30 - Penutup & Kesimpulan\n\n`;
   }
-  
+
   if (includeHashtags) {
-    desc += `#${topic.replace(/\s+/g, '')} #${niche} #Tutorial #Tips #Belajar\n\n`;
+    const tagWord = cleanTopic.replace(/[^a-zA-Z0-9]/g, '');
+    desc += `#${tagWord} #${niche} #Tutorial #Tips #KreatorIndonesia\n\n`;
   }
-  
+
   if (includeLinks) {
-    desc += `📱 Ikuti kami:\n`;
+    desc += `📱 Tautan & Media Sosial:\n`;
+    desc += `Website: https://kanalisa.id\n`;
     desc += `Instagram: @kanalisa\n`;
-    desc += `TikTok: @kanalisa\n`;
-    desc += `Subscribe: youtube.com/@kanalisa\n`;
   }
-  
-  return { description: desc };
+
+  return { description: desc.trim() };
 }
 
 function mockSuggestTags({ title, description, topic, niche, maxTags = 15 }) {
-  const baseTags = [topic, niche, 'tutorial', 'tips', 'indonesia', 'cara', 'panduan', 'belajar', 'mudah', 'pemula'];
-  return { tags: baseTags.slice(0, maxTags) };
+  const cleanTopic = String(topic || 'konten').toLowerCase();
+  const baseTags = [
+    cleanTopic,
+    niche.toLowerCase(),
+    `tutorial ${cleanTopic}`,
+    `cara ${cleanTopic}`,
+    `${cleanTopic} pemula`,
+    `${cleanTopic} 2026`,
+    `${cleanTopic} indonesia`,
+    'tips',
+    'panduan',
+    'kreator indonesia',
+    'belajar',
+    'mudah',
+  ];
+  return { tags: baseTags.slice(0, Math.min(maxTags, 15)) };
 }
 
 function mockSuggestVideoIdeas({ niche, channelData, count = 5 }) {
   const ideas = [
-    { title: `Cara ${niche} untuk Pemula`, reason: 'Konten evergreen yang selalu dicari pemula', targetKeywords: [niche, 'pemula', 'tutorial', 'cara'] },
-    { title: `5 Kesalahan ${niche} yang Harus Dihindari`, reason: 'Format "kesalahan" performa tinggi untuk retensi', targetKeywords: [niche, 'kesalahan', 'tips', 'hindari'] },
-    { title: `Review Alat ${niche} Terbaik 2024`, reason: 'Konten review produk memiliki CTR tinggi', targetKeywords: [niche, 'review', 'terbaik', 'alat'] },
-    { title: `Tips ${niche} Agar Cepat Mahir`, reason: 'Audience suka konten "cepat mahir" / shortcut', targetKeywords: [niche, 'tips', 'cepat', 'mahir'] },
-    { title: `Rahasia ${niche} yang Jarang Dibahas`, reason: 'Konten "rahasia" / insider knowledge bikin penasaran', targetKeywords: [niche, 'rahasia', 'insider', 'tips'] },
+    { title: `Cara Mengembangkan Kanal ${niche} dari Nol`, reason: 'Format evergreen yang terus dicari kreator pemula', targetKeywords: [niche, 'pemula', 'tutorial', 'tips'] },
+    { title: `5 Kesalahan Fatal di Niche ${niche} yang Sering Dilakukan`, reason: 'Format kesalahan memiliki tingkat klik dan retensi tinggi', targetKeywords: [niche, 'kesalahan', 'tips', 'hindari'] },
+    { title: `Review Alat & Perlengkapan Terbaik untuk ${niche}`, reason: 'Audiens memiliki niat beli tinggi saat mencari ulasan alat', targetKeywords: [niche, 'review', 'terbaik', 'alat'] },
+    { title: `Trik Cepat Mahir ${niche} Tanpa Ribet`, reason: 'Format panduan cepat sangat disukai audiens pemula', targetKeywords: [niche, 'cepat', 'mahir', 'trik'] },
+    { title: `Studi Kasus: Cara Video ${niche} Bisa Meledak`, reason: 'Analisis mendalam membangun kredibilitas dan loyalitas audiens', targetKeywords: [niche, 'analisis', 'studi kasus', 'meledak'] },
   ];
   return { ideas: ideas.slice(0, count) };
 }
 
 function mockAnswerQuestion({ question, channelData, videoData }) {
-  return { answer: `Berdasarkan data yang tersedia, untuk pertanyaan "${question}": fokus pada konsistensi upload, optimasi judul & thumbnail, dan interaksi dengan komunitas. Data kanal menunjukkan peluang pertumbuhan di niche ${channelData?.niche || 'umum'}.` };
+  return {
+    answer: `Berdasarkan analisis data Kanalisa untuk pertanyaan "${question}": optimalkan kata kunci utama pada 40 karakter pertama judul, tambahkan timestamp dan hashtag relevan pada deskripsi, serta bandingkan TPJ (tayangan per jam) dengan median kanal Anda.`,
+  };
 }
 
 const GLOSSARY = {
@@ -112,173 +146,89 @@ const STYLE_PROMPTS = {
 };
 
 function buildSystemPrompt(style = 'santai') {
-  const styleDesc = STYLE_PROMPTS[style] || STYLE_PROMPTS.santai;
-  
+  const normalizedStyle = normalizeStyle(style);
+  const styleDesc = STYLE_PROMPTS[normalizedStyle] || STYLE_PROMPTS.santai;
+
   return `Kamu adalah asisten SEO YouTube berbahasa Indonesia untuk kreator Indonesia.
 Nama layanan: Kanalisa.
 
 ATURAN WAJIB:
-1. Selalu gunakan Bahasa Indonesia yang natural (campuran formal/santai sesuai gaya).
-2. Gunakan istilah baku Kanalisa (glosarium di bawah) — JANGAN pakai istilah Inggris.
+1. Selalu gunakan Bahasa Indonesia yang natural.
+2. Gunakan istilah baku Kanalisa:
+${Object.entries(GLOSSARY).map(([en, id]) => `- ${en} → ${id}`).join('\n')}
 3. Judul maksimal 100 karakter.
 4. Deskripsi maksimal 5000 karakter.
-5. Tag: pisahkan dengan koma, maksimal 15 tag.
-6. JANGAN mengarang metrik/angka yang tidak diberikan.
-7. Output HANYA JSON valid sesuai schema yang diminta.
+5. Tag: maksimal 15 tag relevan.
+6. JANGAN mengarang angka metrik palsu.
+7. Output HANYA JSON valid.
 
-GLOSARIUM BAKU (wajib dipakai):
-${Object.entries(GLOSSARY).map(([en, id]) => `- ${en} → ${id}`).join('\n')}
-
-GAYA BAHASA: ${styleDesc}
-
-CONTOH JUDUL BAIK:
-- "Cara Edit Video CapCut di HP untuk Pemula (Lengkap)"
-- "5 Tips Naikkan Tayangan YouTube Shorts Otomatis"
-- "Review HP Gaming Terbaik Bawah 3 Jutaan 2024"
-- "Tutorial Buat Thumbnail Keren Tanpa Photoshop"`;
+GAYA BAHASA: ${styleDesc}`;
 }
 
-export async function suggestTitles({ topic, niche, style = 'santai', count = 5, language = 'id' }) {
-  const systemPrompt = buildSystemPrompt(style);
-  
-  const userPrompt = `Buat ${count} opsi judul YouTube untuk topik: "${topic}"
-Niche kanal: ${niche}
-Gaya: ${style}
-Bahasa: ${language === 'id' ? 'Indonesia' : 'English'}
-
-Kembalikan HANYA JSON array of strings:
-["judul 1", "judul 2", "judul 3", "judul 4", "judul 5"]`;
-
-  console.log('[DEBUG] suggestTitles called with:', { topic, niche, style, count });
-  console.log('[DEBUG] USE_MOCK:', USE_MOCK);
-  
-  try {
-    const result = await callLLM(systemPrompt, userPrompt, { maxTokens: 500, temperature: 0.8 });
-    console.log('[DEBUG] callLLM result:', result);
-    return result;
-  } catch (err) {
-    console.error('[DEBUG] callLLM error:', err.message);
-    throw err;
+export async function suggestTitles({ topic, niche, style = 'santai', count = 5 }) {
+  const normalizedStyle = normalizeStyle(style);
+  if (isMockMode) {
+    return mockSuggestTitles({ topic, niche, style: normalizedStyle, count });
   }
+
+  const systemPrompt = buildSystemPrompt(normalizedStyle);
+  const userPrompt = `Buat ${count} opsi judul YouTube untuk topik: "${topic}". Niche: ${niche}. Gaya: ${normalizedStyle}. Kembalikan JSON format: { "titles": ["judul 1", "judul 2", ...] }`;
+
+  const response = await callLLM(systemPrompt, userPrompt, { maxTokens: 400 });
+  return Array.isArray(response.titles) ? response.titles.slice(0, count) : [];
 }
 
 export async function suggestDescription({ title, topic, niche, style = 'santai', includeTimestamps = true, includeHashtags = true, includeLinks = true }) {
-  const systemPrompt = buildSystemPrompt(style);
-  
-  const userPrompt = `Buat deskripsi YouTube untuk video berjudul: "${title}"
-Topik: ${topic}
-Niche: ${niche}
+  const normalizedStyle = normalizeStyle(style);
+  if (isMockMode) {
+    return mockSuggestDescription({ title, topic, niche, style: normalizedStyle, includeTimestamps, includeHashtags, includeLinks });
+  }
 
-Sertakan:
-${includeTimestamps ? '- Timestamp/daftar isi' : ''}
-${includeHashtags ? '- 3-5 hashtag relevan' : ''}
-${includeLinks ? '- Placeholder link sosial media & subscribe' : ''}
+  const systemPrompt = buildSystemPrompt(normalizedStyle);
+  const userPrompt = `Buat deskripsi YouTube untuk video: "${title}", Topik: ${topic}, Niche: ${niche}. Sertakan ${includeTimestamps ? 'timestamp' : ''}, ${includeHashtags ? 'hashtag' : ''}. Kembalikan JSON format: { "description": "..." }`;
 
-Kembalikan HANYA JSON: { "description": "..." }`;
-
-  return callLLM(systemPrompt, userPrompt, { maxTokens: 1000, temperature: 0.7 });
+  return callLLM(systemPrompt, userPrompt, { maxTokens: 1000 });
 }
 
 export async function suggestTags({ title, description, topic, niche, maxTags = 15 }) {
+  if (isMockMode) {
+    return mockSuggestTags({ title, description, topic, niche, maxTags });
+  }
+
   const systemPrompt = buildSystemPrompt('edukatif');
-  
-  const userPrompt = `Buat tag YouTube (maks ${maxTags} tag) untuk:
-Judul: "${title}"
-Deskripsi: ${description?.slice(0, 500) || 'Tidak ada'}
-Topik: ${topic}
-Niche: ${niche}
+  const userPrompt = `Buat maksimal ${maxTags} tag YouTube untuk judul: "${title}", topik: ${topic}, niche: ${niche}. Kembalikan JSON format: { "tags": ["tag1", "tag2", ...] }`;
 
-Kembalikan HANYA JSON array of strings: ["tag1", "tag2", ...]`;
-
-  return callLLM(systemPrompt, userPrompt, { maxTokens: 300, temperature: 0.5 });
+  return callLLM(systemPrompt, userPrompt, { maxTokens: 300 });
 }
 
 export async function suggestVideoIdeas({ niche, channelData, count = 5 }) {
+  if (isMockMode) {
+    return mockSuggestVideoIdeas({ niche, channelData, count });
+  }
+
   const systemPrompt = buildSystemPrompt('edukatif');
-  
-  const userPrompt = `Berikan ${count} ide video YouTube untuk niche: "${niche}"
-Data kanal: ${JSON.stringify(channelData || {})}
+  const userPrompt = `Berikan ${count} ide video YouTube untuk niche "${niche}". Kembalikan JSON: { "ideas": [{ "title": "...", "reason": "...", "targetKeywords": ["..."] }] }`;
 
-Setiap ide harus berisi: judul, alasan (1-2 kalimat), kata kunci target (3-5 kata).
-
-Kembalikan HANYA JSON array:
-[{"title": "...", "reason": "...", "targetKeywords": ["...", "..."]}]`;
-
-  return callLLM(systemPrompt, userPrompt, { maxTokens: 800, temperature: 0.8 });
+  return callLLM(systemPrompt, userPrompt, { maxTokens: 800 });
 }
 
 export async function answerQuestion({ question, channelData, videoData }) {
-  const systemPrompt = `Kamu adalah asisten analitik YouTube berbahasa Indonesia.
-Gunakan HANYA data yang diberikan. JANGAN mengarang angka.
-Jawab singkat, actionable, bahasa natural.`;
+  if (isMockMode) {
+    return mockAnswerQuestion({ question, channelData, videoData });
+  }
 
-  const userPrompt = `Pertanyaan: "${question}"
-Data kanal: ${JSON.stringify(channelData || {})}
-Data video: ${JSON.stringify(videoData || {})}
+  const systemPrompt = `Kamu adalah asisten analitik YouTube berbahasa Indonesia dari Kanalisa. Gunakan data yang diberikan secara akurat. Output JSON format: { "answer": "..." }`;
+  const userPrompt = `Pertanyaan: "${question}". Data: ${JSON.stringify({ channelData, videoData })}`;
 
-Jawab dalam Bahasa Indonesia.`;
-
-  return callLLM(systemPrompt, userPrompt, { maxTokens: 500, temperature: 0.3 });
+  return callLLM(systemPrompt, userPrompt, { maxTokens: 500 });
 }
 
 async function callLLM(systemPrompt, userPrompt, options = {}) {
-  console.log('[DEBUG] callLLM called, USE_MOCK:', USE_MOCK);
-  if (USE_MOCK) {
-    console.log('[MOCK] LLM call - returning mock response');
-    console.log('[MOCK] systemPrompt contains SEO:', systemPrompt.includes('asisten SEO YouTube'));
-    console.log('[MOCK] userPrompt:', userPrompt.substring(0, 200));
-    // Determine which mock function to call based on system prompt
-    if (systemPrompt.includes('asisten SEO YouTube')) {
-      if (userPrompt.includes('Buat') && userPrompt.includes('opsi judul')) {
-        // Extract topic, niche, style from userPrompt
-        const topicMatch = userPrompt.match(/topik: "([^"]+)"/);
-        const nicheMatch = userPrompt.match(/Niche kanal: ([^\n]+)/);
-        const styleMatch = userPrompt.match(/Gaya: (\w+)/);
-        const countMatch = userPrompt.match(/(\d+) opsi/);
-        console.log('[MOCK] Extracted:', { topic: topicMatch?.[1], niche: nicheMatch?.[1], style: styleMatch?.[1], count: countMatch?.[1] });
-        return mockSuggestTitles({ 
-          topic: topicMatch?.[1] || 'mock', 
-          niche: nicheMatch?.[1] || 'mock', 
-          style: styleMatch?.[1] || 'santai', 
-          count: countMatch ? parseInt(countMatch[1]) : 5 
-        });
-      }
-      if (userPrompt.includes('deskripsi YouTube')) {
-        const titleMatch = userPrompt.match(/berjudul: "([^"]+)"/);
-        const topicMatch = userPrompt.match(/Topik: ([^\n]+)/);
-        const nicheMatch = userPrompt.match(/Niche: ([^\n]+)/);
-        return mockSuggestDescription({ 
-          title: titleMatch?.[1] || 'mock', 
-          topic: topicMatch?.[1] || 'mock', 
-          niche: nicheMatch?.[1] || 'mock' 
-        });
-      }
-      if (userPrompt.includes('tag YouTube')) {
-        const titleMatch = userPrompt.match(/Judul: "([^"]+)"/);
-        const topicMatch = userPrompt.match(/Topik: ([^\n]+)/);
-        const nicheMatch = userPrompt.match(/Niche: ([^\n]+)/);
-        return mockSuggestTags({ 
-          title: titleMatch?.[1] || 'mock', 
-          topic: topicMatch?.[1] || 'mock', 
-          niche: nicheMatch?.[1] || 'mock' 
-        });
-      }
-      if (userPrompt.includes('ide video')) {
-        const nicheMatch = userPrompt.match(/niche: "([^"]+)"/);
-        return mockSuggestVideoIdeas({ niche: nicheMatch?.[1] || 'mock' });
-      }
-    }
-    if (systemPrompt.includes('asisten analitik YouTube')) {
-      const questionMatch = userPrompt.match(/Pertanyaan: "([^"]+)"/);
-      return mockAnswerQuestion({ question: questionMatch?.[1] || 'mock' });
-    }
-    return {};
-  }
-  
   const { maxTokens = 500, temperature = 0.7 } = options;
-  
+
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const url = `${config.LLM_BASE_URL.replace(/\/+$/, '')}/chat/completions`;
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${config.LLM_API_KEY}`,
@@ -297,60 +247,19 @@ async function callLLM(systemPrompt, userPrompt, options = {}) {
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`LLM API error: ${response.status} ${error}`);
+      const errorText = await response.text();
+      throw new Error(`LLM API returned ${response.status}: ${errorText.slice(0, 200)}`);
     }
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
-    
-    if (!content) {
-      throw new Error('Empty response from LLM');
-    }
+    if (!content) throw new Error('Respon LLM kosong');
 
-    let parsed;
-    try {
-      parsed = JSON.parse(content);
-    } catch {
-      throw new Error('Invalid JSON from LLM');
-    }
-
-    return validateAndSanitize(parsed);
+    return JSON.parse(content);
   } catch (err) {
-    console.error('LLM call error:', err.message);
-    throw new Error(`AI service unavailable: ${err.message}`);
+    console.error('LLM API error:', err.message);
+    throw new Error(`Layanan AI sedang tidak tersedia: ${err.message}`);
   }
-}
-
-function validateAndSanitize(data) {
-  if (Array.isArray(data)) {
-    return data
-      .filter(item => typeof item === 'string' && item.length > 0)
-      .map(item => item.slice(0, 100))
-      .slice(0, 10);
-  }
-  
-  if (data.description) {
-    return { description: String(data.description).slice(0, 5000) };
-  }
-  
-  if (data.title) {
-    return { title: String(data.title).slice(0, 100) };
-  }
-  
-  if (data.tags && Array.isArray(data.tags)) {
-    return { tags: data.tags.filter(t => typeof t === 'string').slice(0, 15) };
-  }
-  
-  if (data.ideas && Array.isArray(data.ideas)) {
-    return { ideas: data.ideas.slice(0, 10) };
-  }
-  
-  if (data.answer) {
-    return { answer: String(data.answer).slice(0, 1000) };
-  }
-  
-  return data;
 }
 
 export function getCreditCost(operation) {

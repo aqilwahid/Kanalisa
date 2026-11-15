@@ -19,45 +19,102 @@
     return { host, body };
   }
 
-  function renderCard(body, query, mock) {
-    const note = `<p class="kanalisa-note">${esc(text('mockNotice'))}</p>`;
-    if (!mock) {
-      body.dataset.state = 'empty';
-      body.innerHTML = `<h1 class="kanalisa-title">${esc(text('keywordResearch'))}</h1><p class="kanalisa-state">${esc(text('noMockKeyword'))}</p>${note}`;
-      return;
-    }
-    const opportunity = K.calculateKeywordOpportunity(mock);
-    const labelKey = opportunity.label === 'high' ? 'highOpportunity' : opportunity.label === 'medium' ? 'mediumOpportunity' : 'lowOpportunity';
-    const chips = (mock.related || []).map((keyword) => `<button type="button" class="kanalisa-tag" data-keyword="${esc(keyword)}">${esc(keyword)}</button>`).join('');
+  function getOpportunityLabelKey(score) {
+    if (score >= 70) return ['highOpportunity', 'high'];
+    if (score >= 40) return ['mediumOpportunity', 'medium'];
+    return ['lowOpportunity', 'low'];
+  }
+
+  function renderCard(body, query, data) {
+    const volume = data.volumeRelative ?? data.volume ?? 0;
+    const competition = data.competition ?? 50;
+    const opportunityScore = data.opportunityScore ?? data.score ?? Math.round((volume * (100 - competition)) / 100);
+
+    const [labelKey, labelClass] = getOpportunityLabelKey(opportunityScore);
+    const relatedList = data.relatedKeywords || (data.related || []).map((r) => (typeof r === 'string' ? { keyword: r } : r));
+
+    const chips = relatedList.map((item) => {
+      const kw = typeof item === 'string' ? item : item.keyword;
+      return `<button type="button" class="kanalisa-tag" data-keyword="${esc(kw)}">${esc(kw)}</button>`;
+    }).join('');
+
+    const note = data.isMock ? `<p class="kanalisa-note">${esc(text('mockNotice'))}</p>` : '';
+
     body.dataset.state = 'ready';
     body.innerHTML = `
       <header class="kanalisa-panel-header">
-        <div><p class="kanalisa-eyebrow">${esc(text('keywordLabel', [query]))}</p><h1 class="kanalisa-title">${esc(query)}</h1></div>
-        <span class="kanalisa-badge kanalisa-badge-${esc(opportunity.label)}">${esc(text(labelKey))}</span>
+        <div>
+          <p class="kanalisa-eyebrow">${esc(text('keywordLabel', [query]))}</p>
+          <h1 class="kanalisa-title">${esc(query)}</h1>
+        </div>
+        <span class="kanalisa-badge kanalisa-badge-${labelClass}">${esc(text(labelKey))}</span>
       </header>
       <dl class="kanalisa-metrics kanalisa-metrics-horizontal">
-        <div><dt>${esc(text('relativeVolume'))}</dt><dd>${esc(mock.volume)} / 100</dd></div>
-        <div><dt>${esc(text('competition'))}</dt><dd>${esc(mock.competition)} / 100</dd></div>
-        <div><dt>${esc(text('opportunity'))}</dt><dd class="kanalisa-opp-${esc(opportunity.label)}">${esc(opportunity.score)} / 100</dd></div>
+        <div><dt>${esc(text('relativeVolume'))}</dt><dd>${esc(volume)} / 100</dd></div>
+        <div><dt>${esc(text('competition'))}</dt><dd>${esc(competition)} / 100</dd></div>
+        <div><dt>${esc(text('opportunity'))}</dt><dd class="kanalisa-opp-${labelClass}">${esc(opportunityScore)} / 100</dd></div>
       </dl>
-      ${chips ? `<section class="kanalisa-section"><h2>${esc(text('relatedKeywords'))}</h2><div class="kanalisa-tags">${chips}</div></section>` : ''}${note}`;
+      ${chips ? `<section class="kanalisa-section"><h2>${esc(text('relatedKeywords'))}</h2><div class="kanalisa-tags">${chips}</div></section>` : ''}
+      ${note}
+    `;
+
     body.querySelectorAll('[data-keyword]').forEach((button) => {
-      button.addEventListener('click', () => { window.location.assign(`/results?search_query=${encodeURIComponent(button.dataset.keyword)}`); });
+      button.addEventListener('click', () => {
+        window.location.assign(`/results?search_query=${encodeURIComponent(button.dataset.keyword)}`);
+      });
     });
   }
+
+  function renderCardError(body, query, errorMsg) {
+    body.dataset.state = 'error';
+    body.innerHTML = `
+      <header class="kanalisa-panel-header">
+        <div>
+          <p class="kanalisa-eyebrow">${esc(text('keywordResearch'))}</p>
+          <h1 class="kanalisa-title">${esc(query)}</h1>
+        </div>
+      </header>
+      <p class="kanalisa-state kanalisa-error" role="alert">${esc(errorMsg || text('error'))}</p>
+      <button type="button" class="kanalisa-text-button" data-action="retry">${esc(text('retry'))}</button>
+    `;
+
+    body.querySelector('[data-action="retry"]')?.addEventListener('click', () => {
+      renderResultsPage();
+    });
+  }
+
   async function renderResultsPage() {
     const query = K.extractSearchQuery();
     if (!query) return;
+
     const mounted = mountCard();
     if (!mounted) return;
     const { host, body } = mounted;
+
     const { searchCardEnabled } = await chrome.storage.sync.get({ searchCardEnabled: true });
     if (searchCardEnabled === false) {
       host.remove();
       return;
     }
-    renderCard(body, query, K.getMockKeyword(query));
+
+    body.dataset.state = 'loading';
+    body.innerHTML = `<p class="kanalisa-state" role="status">${esc(text('loading'))}</p>`;
+
+    try {
+      const data = await K.bgApi(`/api/keyword/search?q=${encodeURIComponent(query)}`);
+      if (K.extractSearchQuery() !== query) return;
+      renderCard(body, query, data);
+    } catch (err) {
+      console.warn('[Kanalisa] API keyword search failed, using local fallback:', err.message);
+      const fallback = K.getMockKeyword ? K.getMockKeyword(query) : null;
+      if (fallback) {
+        renderCard(body, query, { ...fallback, isMock: true });
+      } else {
+        renderCardError(body, query, err.message);
+      }
+    }
   }
+
   function clearResultsPage() {
     document.getElementById(CARD_ID)?.remove();
     document.querySelectorAll('.kanalisa-mini-badge').forEach((el) => el.remove());

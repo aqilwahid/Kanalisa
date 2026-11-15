@@ -23,8 +23,7 @@
     "https://accounts.google.com/*"
   ],
   "background": {
-    "service_worker": "background/service-worker.js",
-    "type": "module"
+    "service_worker": "background/service-worker.js"
   },
   "action": {
     "default_popup": "popup/popup.html",
