@@ -54,6 +54,12 @@
 
     <section id="settings-panel" role="tabpanel" aria-labelledby="settings-tab" hidden>
       <form id="settings-form" class="k-stack">
+        <fieldset><legend>Google OAuth Setup</legend>
+          <label class="k-label" for="googleClientId"><span>Google Client ID</span>
+            <input class="k-field" id="googleClientId" type="text" placeholder="Your Web Application Client ID from Google Cloud Console">
+          </label>
+          <p style="font-size: 0.85em; color: #666; margin-top: 0.5em;">Get it from: <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console</a> → OAuth 2.0 Client IDs (Web application)</p>
+        </fieldset>
         <fieldset><legend data-i18n="panelSettingsHeading"></legend>
           <label class="k-toggle"><input type="checkbox" id="videoPanelEnabled"><span data-i18n="featureVideoPanel"></span></label>
           <label class="k-toggle"><input type="checkbox" id="searchCardEnabled"><span data-i18n="featureSearchCard"></span></label>

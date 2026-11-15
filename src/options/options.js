@@ -77,7 +77,8 @@
   $('settings-form').addEventListener('submit', async (event) => {
     event.preventDefault();
     const theme = $('theme').value;
-    await chrome.storage.sync.set({ videoPanelEnabled: $('videoPanelEnabled').checked, searchCardEnabled: $('searchCardEnabled').checked, theme });
+    const googleClientId = $('googleClientId').value.trim();
+    await chrome.storage.sync.set({ videoPanelEnabled: $('videoPanelEnabled').checked, searchCardEnabled: $('searchCardEnabled').checked, theme, googleClientId });
     applyTheme(theme);
     status('settingsSaved');
   });
@@ -99,13 +100,14 @@
   });
 
   async function load() {
-    const s = await chrome.storage.sync.get({ niche: '', timezone: 'Asia/Jakarta', languageStyle: 'casual', videoPanelEnabled: true, searchCardEnabled: true, theme: 'system' });
+    const s = await chrome.storage.sync.get({ niche: '', timezone: 'Asia/Jakarta', languageStyle: 'casual', videoPanelEnabled: true, searchCardEnabled: true, theme: 'system', googleClientId: '' });
     niche = s.niche;
     form.timezone.value = s.timezone;
     form.languageStyle.value = s.languageStyle;
     $('videoPanelEnabled').checked = s.videoPanelEnabled;
     $('searchCardEnabled').checked = s.searchCardEnabled;
     $('theme').value = s.theme;
+    $('googleClientId').value = s.googleClientId;
     applyTheme(s.theme);
     renderNiches();
   }

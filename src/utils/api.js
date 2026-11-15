@@ -3,7 +3,8 @@
   if (typeof module === 'object' && module.exports) module.exports = exports;
   else root.Kanalisa = Object.assign(root.Kanalisa || {}, exports);
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
-  const API_BASE = 'https://api.kanalisa.id';
+  // ponytail: ganti ke https://api.kanalisa.id saat backend sudah di-deploy
+  const API_BASE = 'http://localhost:3000';
   const TOKEN_KEY = 'authToken';
 
   class ApiError extends Error {

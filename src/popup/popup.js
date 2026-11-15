@@ -2,8 +2,6 @@
   const K = globalThis.Kanalisa;
   const text = (key, substitutions) => chrome.i18n.getMessage(key, substitutions) || key;
   const $ = (id) => document.getElementById(id);
-  // TODO: isi dengan OAuth client ID (tipe Web application) dari Google Cloud Console; redirect URI = chrome.identity.getRedirectURL().
-  const GOOGLE_CLIENT_ID = '';
 
   function localize() {
     document.querySelectorAll('[data-i18n]').forEach((element) => {
@@ -41,10 +39,15 @@
   }
 
   async function signIn() {
-    if (!GOOGLE_CLIENT_ID) throw new Error('client id');
+    const { googleClientId } = await chrome.storage.sync.get({ googleClientId: '' });
+    if (!googleClientId) {
+      // dev: backend mode mock menerima credential apa pun
+      const { token } = await K.apiRequest('/api/auth/google', { method: 'POST', auth: false, body: { credential: 'dev-mock' } });
+      return K.setToken(token);
+    }
     const redirectUri = chrome.identity.getRedirectURL();
     const params = new URLSearchParams({
-      client_id: GOOGLE_CLIENT_ID,
+      client_id: googleClientId,
       redirect_uri: redirectUri,
       response_type: 'code',
       scope: 'openid email profile',

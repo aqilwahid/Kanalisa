@@ -4,6 +4,12 @@
   "description": "__MSG_extensionDescription__",
   "version": "0.1.0",
   "default_locale": "id",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
   "permissions": [
     "storage",
     "identity",
@@ -13,6 +19,7 @@
     "https://www.youtube.com/*",
     "https://studio.youtube.com/*",
     "https://api.kanalisa.id/*",
+    "http://localhost:3000/*",
     "https://accounts.google.com/*"
   ],
   "background": {
@@ -44,7 +51,7 @@
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://api.kanalisa.id"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://api.kanalisa.id http://localhost:3000"
   },
   "web_accessible_resources": [
     {
