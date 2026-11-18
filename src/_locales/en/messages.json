@@ -39,7 +39,14 @@
     "message": "Views per hour (VPH)"
   },
   "viewsPerHourTip": {
-    "message": "How fast the video is getting views right now"
+    "message": "Average views per hour since the video was published."
+  },
+  "feedViewsPerHour": {
+    "message": "$VALUE$ VPH",
+    "placeholders": { "value": { "content": "$1" } }
+  },
+  "sampleData": {
+    "message": "Sample data"
   },
   "subscribers": {
     "message": "Subscribers"
@@ -91,6 +98,22 @@
   "seoChecklist": {
     "message": "SEO checks"
   },
+  "studioSeoTitle": {
+    "message": "Kanalisa SEO score"
+  },
+  "studioSeoScore": {
+    "message": "$VALUE$ / 100",
+    "placeholders": { "value": { "content": "$1" } }
+  },
+  "studioKeywordMatch": {
+    "message": "A title keyword appears in the description or tags"
+  },
+  "studioTagsUnavailable": {
+    "message": "Provisional score. Show the Tags field to assess them."
+  },
+  "studioCheckPending": {
+    "message": "Not assessed"
+  },
   "loading": {
     "message": "Loading video data"
   },
@@ -102,6 +125,21 @@
   },
   "keywordResearch": {
     "message": "Keyword research"
+  },
+  "keywordSearchLoading": {
+    "message": "Loading keyword research results."
+  },
+  "keywordSearchError": {
+    "message": "Could not load keyword research results. Try again."
+  },
+  "keywordQuotaExceeded": {
+    "message": "The daily keyword research limit has been reached."
+  },
+  "unlimitedQuota": {
+    "message": "Unlimited"
+  },
+  "searchOnYouTube": {
+    "message": "Search on YouTube"
   },
   "relativeVolume": {
     "message": "Relative search volume"
@@ -358,7 +396,7 @@
     "message": "Display and behavior"
   },
   "featureVideoPanel": {
-    "message": "Analytics panel on video page"
+    "message": "Video metrics on YouTube and SEO scoring in Studio"
   },
   "featureSearchCard": {
     "message": "Research card on search page"

@@ -44,6 +44,8 @@
         "utils/mock-data.js",
         "content/pages/watch.js",
         "content/pages/results.js",
+        "content/pages/home.js",
+        "content/pages/studio.js",
         "content/index.js"
       ],
       "run_at": "document_idle"
@@ -60,7 +62,10 @@
       ],
       "resources": [
         "styles/base.css",
-        "styles/panel.css"
+        "styles/panel.css",
+        "styles/feed.css",
+        "styles/studio.css",
+        "icons/icon-32.png"
       ]
     }
   ]

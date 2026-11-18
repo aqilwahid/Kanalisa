@@ -2,6 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import { config, modes } from '../config.js';
+import { checkKeywordQuota } from '../middleware/rateLimit.js';
 
 const router = express.Router();
 
@@ -148,6 +149,7 @@ router.get('/me', async (req, res) => {
       return res.status(401).json({ error: 'Pengguna tidak ditemukan' });
     }
 
+    const { used = null, limit = null } = await checkKeywordQuota(req.redis, user.id, user.tier);
     res.json({
       user: {
         id: user.id,
@@ -157,6 +159,7 @@ router.get('/me', async (req, res) => {
         tier: user.tier || 'free',
         aiCredits: user.ai_credits ?? user.aiCredits ?? 50,
         keywordQuota: user.keyword_quota ?? user.keywordQuota ?? 3,
+        keywordUsage: { used, limit },
         createdAt: user.created_at ?? user.createdAt,
       },
     });

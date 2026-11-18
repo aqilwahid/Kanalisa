@@ -1,0 +1,15 @@
+:host { display: block; margin-block-start: 6px; }
+.kanalisa-root {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  min-height: 22px;
+  padding-inline: 6px;
+  border-inline-start: 2px solid var(--k-accent);
+  border-radius: 3px;
+  background: var(--k-surface);
+  color: var(--k-text);
+  font: 600 12px/1.35 var(--k-font);
+}
+.kanalisa-feed-source { color: var(--k-muted); font-size: 11px; font-weight: 400; }

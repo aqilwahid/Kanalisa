@@ -64,12 +64,18 @@
     };
   }
 
+  function getKeywordOpportunityLevel(score) {
+    if (score >= 70) return 'high';
+    if (score >= 40) return 'medium';
+    return 'low';
+  }
+
   function calculateKeywordOpportunity({ volume = 0, competition = 0 }) {
     const relativeVolume = clamp(Number(volume));
     const competitionScore = clamp(Number(competition));
     const score = Math.round(clamp(relativeVolume * (100 - competitionScore) / 100));
-    return { volume: relativeVolume, competition: competitionScore, score, label: score >= 70 ? 'high' : score >= 40 ? 'medium' : 'low' };
+    return { volume: relativeVolume, competition: competitionScore, score, label: getKeywordOpportunityLevel(score) };
   }
 
-  return { WEIGHTS, calculateKanalisaScore, calculateKeywordOpportunity, tokenize };
+  return { WEIGHTS, calculateSeo, calculateKanalisaScore, calculateKeywordOpportunity, getKeywordOpportunityLevel, tokenize };
 });

@@ -8,6 +8,13 @@ export const WEIGHTS = Object.freeze({
   keyword: 0.20,
 });
 
+export function calculateVideoVelocity(viewCount, publishedAt) {
+  const now = Date.now();
+  const publishedTimestamp = publishedAt ? new Date(publishedAt).getTime() : now;
+  const hoursSincePublish = Math.max(180000, now - publishedTimestamp) / 3600000;
+  return { vph: viewCount > 0 ? viewCount / hoursSincePublish : 0, hoursSincePublish };
+}
+
 export function calculateKanalisaScore(video, channelStats = {}) {
   const {
     viewCount = 0,
@@ -25,13 +32,7 @@ export function calculateKanalisaScore(video, channelStats = {}) {
     categoryMedianEngagement = 0.02,
   } = channelStats;
 
-  // Waktu sejak publikasi dalam jam (minimal 0.05 jam / 3 menit agar tidak division by zero)
-  const publishedTimestamp = publishedAt ? new Date(publishedAt).getTime() : Date.now();
-  const diffMs = Math.max(180000, Date.now() - publishedTimestamp);
-  const hoursSincePublish = diffMs / (1000 * 60 * 60);
-
-  // TPJ adalah rata-rata tayangan per jam sejak dipublikasikan, bukan kecepatan real-time saat ini
-  const vph = viewCount > 0 ? viewCount / hoursSincePublish : 0;
+  const { vph, hoursSincePublish } = calculateVideoVelocity(viewCount, publishedAt);
 
   const speedScore = calculateSpeedScore(vph, medianVPH);
   const engagementScore = calculateEngagementScore(likeCount, commentCount, viewCount, categoryMedianEngagement);

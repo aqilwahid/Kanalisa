@@ -9,6 +9,8 @@
 ### ✨ Fitur Utama (MVP v1.0)
 
 - 📊 **Overlay Panel Video (`/watch`)** — Skor Kanalisa (0–100), metrik video (tayangan, TPJ rata-rata sejak publikasi, suka, komentar, tingkat interaksi, umur video), analisis tag dengan tombol salin, checklist SEO 7 butir, dan indikator video meledak (*outlier*).
+- **Beranda YouTube** menampilkan rata-rata tayangan per jam (TPJ/VPH) pada kartu video, dengan logo Kanalisa.
+- **YouTube Studio** menampilkan skor SEO metadata (0–100) dan tujuh pemeriksaan saat judul, deskripsi, atau tag diedit.
 - 🔍 **Riset Kata Kunci (`/results`)** — Kartu analisis kata kunci di atas hasil pencarian YouTube: volume pencarian relatif, tingkat persaingan, skor peluang kata kunci, dan daftar kata kunci terkait.
 - 💡 **Rekomendasi AI** — Pembuatan ide judul video dalam 4 gaya bahasa Indonesia (Formal, Santai, Clickbait Ringan, Edukatif), rekomendasi deskripsi terstruktur dengan timestamp & hashtag, serta rekomendasi tag.
 - 🔐 **Autentikasi Pengguna** — Login menggunakan Google OAuth dengan dukungan *1-Click Mock Dev Login* untuk pengujian lokal instan tanpa konfigurasi Google Cloud Console.
@@ -147,7 +149,7 @@ Backend Kanalisa bertindak sebagai penyedia data analitik dan logika AI.
    - Klik tombol **"Masuk dengan Google"**.
    - Dalam mode development/mock, login langsung berhasil secara instan dan status berubah menjadi: `"Terkoneksi sebagai test@example.com"`.
    - Informasi sisa Kredit AI (50) dan Kuota Kata Kunci (3) akan tampil.
-3. Coba ketik kata kunci pada form pencarian di popup lalu tekan Enter → tab pencarian YouTube akan otomatis terbuka.
+3. Ketik kata kunci lalu tekan Enter. Popup menampilkan volume relatif, persaingan, skor peluang, dan kata kunci terkait. Klik **Cari di YouTube** jika ingin membuka hasil video.
 
 #### D. Uji Coba Halaman Pengaturan & Onboarding
 1. Pada popup, klik tombol **"Buka pengaturan"** (atau klik kanan ikon ekstensi → **Options**).
@@ -156,9 +158,15 @@ Backend Kanalisa bertindak sebagai penyedia data analitik dan logika AI.
    - Langkah 2: Pilih zona waktu (WIB/WITA/WIT) dan gaya bahasa AI (Santai, Formal, Clickbait Ringan, Edukatif).
    - Langkah 3: Tinjau dan simpan.
 3. Tab **Pengaturan**:
-   - Anda dapat mengaktifkan/menonaktifkan panel video atau kartu pencarian.
+   - Pengaturan **Metrik video di YouTube dan skor SEO di Studio** mengontrol TPJ di beranda, panel video, dan skor di Studio. Kartu pencarian punya pengaturan terpisah.
    - Pilihan tema: Ikuti Sistem, Terang, Gelap.
    - Konfigurasi URL server backend (otomatis `http://localhost:3000`).
+
+#### E. Uji Coba TPJ Beranda dan Skor SEO Studio
+
+1. Setelah memuat ulang ekstensi, buka beranda YouTube yang menampilkan rekomendasi video. TPJ muncul di bawah metadata kartu. Backend mock memberi label **Data contoh** pada metrik.
+2. Di YouTube Studio, buka langkah **Detail** pada dialog unggah atau buka detail video yang sudah ada. Panel **Skor SEO Kanalisa** muncul di bawah judul. Ubah judul atau deskripsi dan buka **Pemeriksaan SEO** untuk melihat pengaruhnya.
+3. Tampilkan kolom **Tag** agar pemeriksaan tag ikut dihitung. Ekstensi menilai draf di browser tanpa mengirim metadata ke backend atau mengubah isian YouTube Studio.
 
 ---
 
@@ -196,6 +204,23 @@ npm test
 # Jalankan self-check logika format & scoring ekstensi
 cd ../src
 node utils/self-check.js
+```
+
+Jalankan tes Playwright dari folder `backend`. Port `3000` harus kosong agar tes bisa memulai backend mock sendiri. Suite memuat ekstensi MV3 di Chromium dan memakai fixture untuk halaman YouTube serta formulir unggah dan edit di Studio.
+
+```powershell
+cd backend
+npm ci
+npx playwright install chromium --no-shell
+npm run test:e2e
+```
+
+Untuk mengecek selector pada YouTube langsung, jalankan smoke test berikut. Backend tetap memakai data mock.
+
+```powershell
+$env:KANALISA_YOUTUBE_LIVE = '1'
+npm run test:e2e -- --grep 'live YouTube'
+Remove-Item Env:KANALISA_YOUTUBE_LIVE
 ```
 
 ---

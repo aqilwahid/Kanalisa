@@ -10,6 +10,11 @@
    * requiring an extension release, mitigating YouTube DOM updates.
    */
   const DEFAULT_SELECTORS = Object.freeze({
+    home: {
+      videoCard: 'ytd-rich-item-renderer',
+      videoLink: 'a[href^="/watch?"], a[href^="/shorts/"], a[href^="https://www.youtube.com/watch?"], a[href^="https://www.youtube.com/shorts/"]',
+      videoMetadata: '.yt-lockup-metadata-view-model__text-container, .yt-lockup-metadata-view-model__metadata, #meta, #details',
+    },
     watch: {
       secondaryColumn: '#secondary-inner, #secondary, ytd-watch-next-secondary-results-renderer',
       primaryColumn: '#primary-inner, #primary',
@@ -34,10 +39,14 @@
       tabs: '#tabs-container, ytd-tabbed-header-renderer',
     },
     studio: {
-      metadataDialog: 'ytcp-video-metadata-editor, ytcp-uploads-dialog',
-      titleInput: '#textbox[aria-label*="Title"], #textbox[aria-label*="Judul"], #title-textarea #textbox',
-      descriptionInput: '#description-textarea #textbox, #textbox[aria-label*="Deskripsi"]',
-      tagsContainer: '#tags-container, ytcp-chip-bar',
+      uploadDialog: 'ytcp-uploads-dialog',
+      metadataEditor: 'ytcp-video-metadata-editor, ytcp-video-details',
+      titleInput: '#title-textarea #textbox, #title-textarea textarea, #textbox[aria-label*="title" i], #textbox[aria-label*="judul" i]',
+      titleField: '#title-textarea, #title-wrapper, ytcp-social-suggestions-textbox',
+      descriptionInput: '#description-textarea #textbox, #description-textarea textarea, #textbox[aria-label*="description" i], #textbox[aria-label*="deskripsi" i]',
+      tagsContainer: '#tags-container, ytcp-chip-bar, ytcp-video-metadata-tag-editor',
+      tagChip: 'ytcp-chip, ytcp-tag-chip, [data-tag-chip]',
+      tagText: '#chip-text, #text, .chip-text',
     },
   });
 
@@ -52,6 +61,7 @@
         const stored = await chrome.storage.local.get('remoteConfig:selectors');
         if (stored && stored['remoteConfig:selectors']) {
           activeSelectors = {
+            home: { ...DEFAULT_SELECTORS.home, ...stored['remoteConfig:selectors'].home },
             watch: { ...DEFAULT_SELECTORS.watch, ...stored['remoteConfig:selectors'].watch },
             results: { ...DEFAULT_SELECTORS.results, ...stored['remoteConfig:selectors'].results },
             channel: { ...DEFAULT_SELECTORS.channel, ...stored['remoteConfig:selectors'].channel },
@@ -141,13 +151,13 @@
   }
 
   // Shadow DOM isolates panel CSS from YouTube's styles (PRD §9.1).
-  function createShadowHost(id, tag = 'aside') {
-    let host = document.getElementById(id);
+  function createShadowHost(id, tag = 'aside', styles = ['styles/base.css', 'styles/panel.css']) {
+    let host = id ? document.getElementById(id) : null;
     if (host) return { host, shadow: host.shadowRoot, created: false };
     host = document.createElement(tag);
-    host.id = id;
+    if (id) host.id = id;
     const shadow = host.attachShadow({ mode: 'open' });
-    for (const file of ['styles/base.css', 'styles/panel.css']) {
+    for (const file of styles) {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = chrome.runtime.getURL(file);

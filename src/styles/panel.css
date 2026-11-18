@@ -11,6 +11,9 @@
 .kanalisa-title { margin: 2px 0 0; font-size: 18px; font-weight: 700; }
 .kanalisa-score { display: block; font-size: 44px; font-weight: 800; line-height: 1; color: var(--k-accent); font-variant-numeric: tabular-nums; }
 .kanalisa-panel-actions { display: flex; gap: 4px; }
+.kanalisa-watch-brand { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 6px; }
+.kanalisa-watch-brand .kanalisa-title { margin: 0; }
+.kanalisa-watch-source { flex-basis: 100%; font-size: 12px; color: var(--k-muted); }
 
 .kanalisa-icon-button { min-width: 44px; min-height: 44px; border: 1px solid var(--k-border); border-radius: var(--k-radius); background: transparent; color: var(--k-text); font-size: 20px; }
 .kanalisa-icon-button:hover { background: var(--k-surface); }
@@ -21,6 +24,8 @@
 .kanalisa-metrics div { background: var(--k-surface); border-radius: var(--k-radius); padding: 8px 10px; }
 .kanalisa-metrics dt { font-size: 12px; color: var(--k-muted); }
 .kanalisa-metrics dd { margin: 2px 0 0; font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.kanalisa-watch-key-metrics { grid-template-columns: repeat(auto-fit, minmax(76px, 1fr)); }
+.kanalisa-watch-key-metrics div { display: flex; flex-direction: column; justify-content: space-between; }
 
 .kanalisa-section { margin-top: 16px; }
 .kanalisa-section h2 { margin: 0 0 8px; font-size: 14px; font-weight: 700; }

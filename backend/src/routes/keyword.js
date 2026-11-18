@@ -38,9 +38,13 @@ router.get('/search', optionalAuthMiddleware, async (req, res) => {
       relatedKeywords: (result.relatedKeywords || []).slice(0, parsedLimit),
     };
 
-    await incrementKeywordUsage(req.redis, userId);
+    const used = await incrementKeywordUsage(req.redis, userId);
+    const limitForTier = quotaCheck.limit ?? null;
 
-    res.json(limitedResults);
+    res.json({
+      ...limitedResults,
+      keywordUsage: { used: limitForTier === null ? null : used, limit: limitForTier },
+    });
   } catch (err) {
     console.error('Keyword search error:', err.message);
     res.status(500).json({ error: 'Gagal melakukan riset kata kunci' });

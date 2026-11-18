@@ -39,7 +39,14 @@
     "message": "Tayangan per jam (TPJ)"
   },
   "viewsPerHourTip": {
-    "message": "Kecepatan video mendapat tayangan saat ini"
+    "message": "Rata-rata tayangan per jam sejak video dipublikasikan."
+  },
+  "feedViewsPerHour": {
+    "message": "$VALUE$ TPJ",
+    "placeholders": { "value": { "content": "$1" } }
+  },
+  "sampleData": {
+    "message": "Data contoh"
   },
   "subscribers": {
     "message": "Subscriber"
@@ -91,6 +98,22 @@
   "seoChecklist": {
     "message": "Pemeriksaan SEO"
   },
+  "studioSeoTitle": {
+    "message": "Skor SEO Kanalisa"
+  },
+  "studioSeoScore": {
+    "message": "$VALUE$ / 100",
+    "placeholders": { "value": { "content": "$1" } }
+  },
+  "studioKeywordMatch": {
+    "message": "Kata kunci judul muncul di deskripsi atau tag"
+  },
+  "studioTagsUnavailable": {
+    "message": "Skor sementara. Tampilkan kolom Tag untuk menilai tag."
+  },
+  "studioCheckPending": {
+    "message": "Belum dinilai"
+  },
   "loading": {
     "message": "Memuat data video"
   },
@@ -102,6 +125,21 @@
   },
   "keywordResearch": {
     "message": "Riset kata kunci"
+  },
+  "keywordSearchLoading": {
+    "message": "Memuat hasil riset kata kunci."
+  },
+  "keywordSearchError": {
+    "message": "Hasil riset gagal dimuat. Coba lagi."
+  },
+  "keywordQuotaExceeded": {
+    "message": "Batas kuota harian riset kata kunci tercapai."
+  },
+  "unlimitedQuota": {
+    "message": "Tak terbatas"
+  },
+  "searchOnYouTube": {
+    "message": "Cari di YouTube"
   },
   "relativeVolume": {
     "message": "Volume pencarian relatif"
@@ -358,7 +396,7 @@
     "message": "Tampilan dan perilaku"
   },
   "featureVideoPanel": {
-    "message": "Panel analitik di halaman video"
+    "message": "Metrik video di YouTube dan skor SEO di Studio"
   },
   "featureSearchCard": {
     "message": "Kartu riset di halaman pencarian"

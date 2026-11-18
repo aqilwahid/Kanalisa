@@ -1,7 +1,7 @@
 import express from 'express';
 import { modes } from '../config.js';
 import { getVideoDetails, getChannelDetails, getVideos, normalizeVideo, normalizeChannel } from '../services/youtube.js';
-import { calculateKanalisaScore, calculateOutlierRatio, estimateEarningsRupiah } from '../services/scoring.js';
+import { calculateKanalisaScore, calculateOutlierRatio, calculateVideoVelocity, estimateEarningsRupiah } from '../services/scoring.js';
 import { optionalAuthMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -86,11 +86,15 @@ router.post('/batch', optionalAuthMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Tidak ada video ID valid yang diberikan' });
     }
 
-    const videos = await getVideos(validIds);
+    const metricsOnly = req.query.metrics === 'true';
+    const videos = await getVideos(validIds, metricsOnly ? ['snippet', 'statistics'] : undefined);
     const normalized = videos.map(normalizeVideo).filter(Boolean);
 
     res.json({
-      videos: normalized,
+      videos: metricsOnly ? normalized.map(({ id, viewCount, publishedAt }) => ({
+        id,
+        vph: Math.round(calculateVideoVelocity(viewCount, publishedAt).vph),
+      })) : normalized,
       isMock: modes.youtube === 'mock',
       source: modes.youtube === 'mock' ? 'mock' : 'youtube-v3',
     });

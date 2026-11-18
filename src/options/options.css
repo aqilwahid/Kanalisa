@@ -6,6 +6,7 @@
 .k-tab[aria-selected="true"] { color: var(--k-text); border-bottom-color: var(--k-accent); }
 .k-tab:hover { background: var(--k-surface); color: var(--k-text); }
 .k-step, #settings-form fieldset { display: grid; gap: 12px; margin: 0; padding: 16px 0; border: 0; }
+.k-step[hidden] { display: none; }
 .k-step legend, #settings-form legend { font-size: 16px; font-weight: 700; padding: 0; }
 .k-choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .k-choice { min-height: 44px; padding: 8px 12px; border: 1px solid var(--k-border); border-radius: var(--k-radius); background: var(--k-bg); color: var(--k-text); font: inherit; text-align: left; }

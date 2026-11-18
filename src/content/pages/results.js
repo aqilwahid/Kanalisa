@@ -19,18 +19,12 @@
     return { host, body };
   }
 
-  function getOpportunityLabelKey(score) {
-    if (score >= 70) return ['highOpportunity', 'high'];
-    if (score >= 40) return ['mediumOpportunity', 'medium'];
-    return ['lowOpportunity', 'low'];
-  }
-
   function renderCard(body, query, data) {
     const volume = data.volumeRelative ?? data.volume ?? 0;
     const competition = data.competition ?? 50;
     const opportunityScore = data.opportunityScore ?? data.score ?? Math.round((volume * (100 - competition)) / 100);
 
-    const [labelKey, labelClass] = getOpportunityLabelKey(opportunityScore);
+    const labelClass = K.getKeywordOpportunityLevel(opportunityScore);
     const relatedList = data.relatedKeywords || (data.related || []).map((r) => (typeof r === 'string' ? { keyword: r } : r));
 
     const chips = relatedList.map((item) => {
@@ -47,7 +41,7 @@
           <p class="kanalisa-eyebrow">${esc(text('keywordLabel', [query]))}</p>
           <h1 class="kanalisa-title">${esc(query)}</h1>
         </div>
-        <span class="kanalisa-badge kanalisa-badge-${labelClass}">${esc(text(labelKey))}</span>
+        <span class="kanalisa-badge kanalisa-badge-${labelClass}">${esc(text(`${labelClass}Opportunity`))}</span>
       </header>
       <dl class="kanalisa-metrics kanalisa-metrics-horizontal">
         <div><dt>${esc(text('relativeVolume'))}</dt><dd>${esc(volume)} / 100</dd></div>

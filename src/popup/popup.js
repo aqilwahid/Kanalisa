@@ -2,6 +2,9 @@
   const K = globalThis.Kanalisa;
   const text = (key, substitutions) => chrome.i18n.getMessage(key, substitutions) || key;
   const $ = (id) => document.getElementById(id);
+  const searchInput = $('search-input');
+  const searchButton = $('search-submit');
+  const youtubeLink = $('search-youtube');
 
   function localize() {
     document.querySelectorAll('[data-i18n]').forEach((element) => {
@@ -20,9 +23,15 @@
     const connected = Boolean(user);
     $('auth-status').textContent = connected ? text('connectedAs', [user.email]) : text('notSignedIn');
     $('ai-credits').textContent = connected && credits ? `${credits.remaining} / ${credits.limit}` : text('unknown');
-    $('keyword-quota').textContent = connected && user.keywordQuota != null ? `${user.keywordQuotaUsed || 0} / ${user.keywordQuota}` : text('unknown');
+    renderKeywordUsage(user?.keywordUsage);
     $('login-toggle').textContent = text(connected ? 'signOutDummy' : 'googleSignIn');
     $('login-toggle').dataset.connected = String(connected);
+  }
+
+  function renderKeywordUsage(usage) {
+    let label = text('unknown');
+    if (usage) label = usage.limit === null ? text('unlimitedQuota') : `${usage.used} / ${usage.limit}`;
+    $('keyword-quota').textContent = label;
   }
 
   async function loadAccount() {
@@ -35,8 +44,7 @@
         K.apiRequest('/api/auth/me'),
         K.apiRequest('/api/ai/credits'),
       ]);
-      const { keywordQuotaUsed = 0 } = await chrome.storage.sync.get('keywordQuotaUsed');
-      render({ ...user, keywordQuotaUsed }, credits);
+      render(user, credits);
       setState('');
     } catch (err) {
       console.warn('[Kanalisa] loadAccount failed:', err.message);
@@ -120,12 +128,53 @@
     }
   });
 
+  function renderKeywordResult(query, data) {
+    $('keyword-query').textContent = query;
+    $('keyword-volume').textContent = `${data.volumeRelative} / 100`;
+    $('keyword-competition').textContent = `${data.competition} / 100`;
+    $('keyword-opportunity').textContent = `${data.opportunityScore} / 100`;
+    $('keyword-level').textContent = text(`${K.getKeywordOpportunityLevel(data.opportunityScore)}Opportunity`);
+
+    const related = (data.relatedKeywords || []).map(({ keyword }) => {
+      const item = document.createElement('li');
+      item.textContent = keyword;
+      return item;
+    });
+    $('keyword-related-list').replaceChildren(...related);
+    $('keyword-related').hidden = related.length === 0;
+    $('keyword-mock').hidden = !data.isMock;
+    $('keyword-result').hidden = false;
+  }
+
+  function updateYoutubeLink() {
+    const query = searchInput.value.trim();
+    youtubeLink.hidden = !query;
+    if (query) youtubeLink.href = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+  }
+
+  searchInput.addEventListener('input', updateYoutubeLink);
+  updateYoutubeLink();
+
   $('search-form').addEventListener('submit', async (event) => {
     event.preventDefault();
-    const query = $('search-input').value.trim();
-    if (!query) return;
-    await chrome.tabs.create({ url: `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}` });
-    window.close();
+    const query = searchInput.value.trim();
+    if (!query || searchButton.disabled) return;
+
+    searchButton.disabled = true;
+    $('keyword-result').hidden = true;
+    $('keyword-state').textContent = text('keywordSearchLoading');
+    $('keyword-error').textContent = '';
+    try {
+      const token = await K.getToken();
+      const data = await K.apiRequest(`/api/keyword/search?q=${encodeURIComponent(query)}`);
+      renderKeywordResult(query, data);
+      if (token && data.keywordUsage && token === await K.getToken()) renderKeywordUsage(data.keywordUsage);
+    } catch (error) {
+      $('keyword-error').textContent = error.status === 429 ? text('keywordQuotaExceeded') : text('keywordSearchError');
+    } finally {
+      $('keyword-state').textContent = '';
+      searchButton.disabled = false;
+    }
   });
 
   chrome.storage.sync.get({ theme: 'system' }).then(({ theme }) => {

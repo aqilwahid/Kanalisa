@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kanalisa</title>
   <link rel="stylesheet" href="../styles/base.css">
   <link rel="stylesheet" href="popup.css">
@@ -34,10 +35,28 @@
     <form class="k-stack" id="search-form">
       <label class="k-label" for="search-input" data-i18n="keywordResearch"></label>
       <input class="k-field" id="search-input" type="search" required>
-      <button class="k-button" type="submit" data-i18n="keywordResearch"></button>
+      <button class="k-button" id="search-submit" type="submit" data-i18n="keywordResearch"></button>
+      <a class="k-button k-button-quiet" id="search-youtube" target="_blank" rel="noopener" data-i18n="searchOnYouTube" hidden></a>
     </form>
+    <p class="k-state" id="keyword-state" role="status"></p>
+    <p class="k-error" id="keyword-error" role="alert"></p>
+    <section id="keyword-result" aria-labelledby="keyword-query" hidden>
+      <h2 id="keyword-query"></h2>
+      <p class="k-state" id="keyword-level"></p>
+      <dl class="k-list">
+        <div class="k-row"><dt data-i18n="relativeVolume"></dt><dd id="keyword-volume"></dd></div>
+        <div class="k-row"><dt data-i18n="competition"></dt><dd id="keyword-competition"></dd></div>
+        <div class="k-row"><dt data-i18n="opportunity"></dt><dd id="keyword-opportunity"></dd></div>
+      </dl>
+      <div id="keyword-related">
+        <h3 data-i18n="relatedKeywords"></h3>
+        <ul id="keyword-related-list"></ul>
+      </div>
+      <p class="k-state" id="keyword-mock" data-i18n="mockNotice" hidden></p>
+    </section>
   </main>
   <script src="../utils/format.js"></script>
+  <script src="../utils/scoring.js"></script>
   <script src="../utils/cache.js"></script>
   <script src="../utils/api.js"></script>
   <script src="popup.js"></script>

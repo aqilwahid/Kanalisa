@@ -46,7 +46,7 @@
       : `<p class="kanalisa-muted">${esc(text('noTags'))}</p>`;
 
     const mockBadge = isMock
-      ? `<span class="kanalisa-badge kanalisa-badge-medium" title="${esc(text('mockNotice'))}" style="font-size:11px;padding:2px 6px;">Data Mock</span>`
+      ? `<span class="kanalisa-watch-source" title="${esc(text('mockNotice'))}">${esc(text('sampleData'))}</span>`
       : '';
 
     const outlierBadge = score.outlier
@@ -56,7 +56,8 @@
     body.dataset.state = 'ready';
     body.innerHTML = `
       <header class="kanalisa-panel-header">
-        <div style="display:flex;align-items:center;gap:6px;">
+        <div class="kanalisa-watch-brand">
+          <img width="24" height="24" alt="" src="${chrome.runtime.getURL('icons/icon-32.png')}">
           <h1 class="kanalisa-title">${esc(text('extensionName'))}</h1>
           ${mockBadge}
         </div>
@@ -73,7 +74,7 @@
         ${outlierBadge}
         <div role="tablist" class="kanalisa-tablist" aria-label="${esc(text('extensionName'))}">${tabs}</div>
         <section role="tabpanel" id="kp-0" aria-labelledby="kt-0" class="kanalisa-tabpanel">
-          <dl class="kanalisa-metrics">
+          <dl class="kanalisa-metrics kanalisa-watch-key-metrics">
             <div>
               <dt title="${esc(text('viewsPerHourTip'))}">${esc(text('viewsPerHour'))}</dt>
               <dd>${esc(K.formatNumber(metrics.vph ?? metrics.viewsPerHour ?? 0))}</dd>
@@ -81,6 +82,10 @@
             <div>
               <dt>${esc(text('views'))}</dt>
               <dd>${esc(K.formatNumber(video.views ?? video.viewCount ?? 0))}</dd>
+            </div>
+            <div>
+              <dt>${esc(text('engagementRate'))}</dt>
+              <dd>${esc(K.formatPercent(metrics.engagementRate ?? 0))}</dd>
             </div>
           </dl>
           <dl class="kanalisa-metrics" id="kanalisa-more" hidden>
@@ -91,10 +96,6 @@
             <div>
               <dt>${esc(text('comments'))}</dt>
               <dd>${esc(K.formatNumber(video.comments ?? video.commentCount ?? 0))}</dd>
-            </div>
-            <div>
-              <dt>${esc(text('engagementRate'))}</dt>
-              <dd>${esc(K.formatPercent(metrics.engagementRate ?? 0))}</dd>
             </div>
             <div>
               <dt>${esc(text('videoAge'))}</dt>
